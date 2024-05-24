@@ -1,5 +1,8 @@
 package com.nongratis.timetracker.fragments;
 
+import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -14,9 +17,12 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.nongratis.timetracker.R;
+import com.nongratis.timetracker.utils.NotificationHelper;
+import com.nongratis.timetracker.utils.TimerService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class TimerFragment extends Fragment {
 
@@ -31,6 +37,7 @@ public class TimerFragment extends Fragment {
 
 
     private Runnable updateTimer = new Runnable() {
+        @SuppressLint("DefaultLocale")
         @Override
         public void run() {
             long elapsedTime = System.currentTimeMillis() - startTime;
@@ -79,6 +86,10 @@ public class TimerFragment extends Fragment {
         handler.post(updateTimer);
         startStopButton.setImageResource(R.drawable.ic_stop);
         pauseButton.setVisibility(View.VISIBLE);
+
+        // Start the TimerService
+        Intent intent = new Intent(getContext(), TimerService.class);
+        getContext().startService(intent);
     }
 
     private void stopTimer() {
@@ -87,6 +98,10 @@ public class TimerFragment extends Fragment {
         handler.removeCallbacks(updateTimer);
         startStopButton.setImageResource(R.drawable.ic_start);
         pauseButton.setVisibility(View.GONE);
+
+        // Stop the TimerService
+        Intent intent = new Intent(getContext(), TimerService.class);
+        getContext().stopService(intent);
     }
 
     private void pauseTimer() {
@@ -101,7 +116,7 @@ public class TimerFragment extends Fragment {
         items.add("Add new...");
         // Add existing items here
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, items);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, items);
         dropdown.setAdapter(adapter);
 
         dropdown.setOnItemClickListener((parent, view, position, id) -> {
