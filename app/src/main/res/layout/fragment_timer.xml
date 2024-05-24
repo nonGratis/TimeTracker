@@ -91,6 +91,19 @@
                 app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Circle" />
 
             <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/pause_button"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_pause"
+                android:visibility="gone"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Circle" />
+
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/add_button"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
