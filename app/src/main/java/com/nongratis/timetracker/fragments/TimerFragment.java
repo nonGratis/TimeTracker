@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.nongratis.timetracker.R;
 
@@ -21,11 +22,12 @@ import java.util.List;
 public class TimerFragment extends Fragment {
 
     private TextView timerDisplay;
-    private Button startStopButton;
+    private ShapeableImageView startStopButton;
     private boolean isRunning = false;
     private long startTime = 0L;
     private Handler handler = new Handler();
     private MaterialAutoCompleteTextView companyName;
+
 
     private Runnable updateTimer = new Runnable() {
         @Override
@@ -65,13 +67,13 @@ public class TimerFragment extends Fragment {
         isRunning = true;
         startTime = System.currentTimeMillis();
         handler.post(updateTimer);
-        startStopButton.setText(R.string.stop);
+        startStopButton.setImageResource(R.drawable.ic_stop);
     }
 
     private void stopTimer() {
         isRunning = false;
         handler.removeCallbacks(updateTimer);
-        startStopButton.setText(R.string.start);
+        startStopButton.setImageResource(R.drawable.ic_start);
     }
 
     private void setupDropdown(MaterialAutoCompleteTextView dropdown) {

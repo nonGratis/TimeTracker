@@ -62,11 +62,15 @@
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
-        <Button
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/start_stop_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/start"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/ic_start"
+            android:clickable="true"
+            android:focusable="true"
+            android:scaleType="centerInside"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Circle"
             android:layout_gravity="center"/>
     </LinearLayout>
 
