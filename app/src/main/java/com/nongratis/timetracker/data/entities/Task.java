@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey;
 public class Task {
     @PrimaryKey(autoGenerate = true)
     private int id;
-    private String companyName;
+    private String workflowName;
     private String projectName;
     private String description;
     private long startTime;
@@ -22,12 +22,12 @@ public class Task {
         this.id = id;
     }
 
-    public String getCompanyName() {
-        return companyName;
+    public String getWorkflowName() {
+        return workflowName;
     }
 
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
+    public void setWorkflowName(String workflowName) {
+        this.workflowName = workflowName;
     }
 
     public String getProjectName() {

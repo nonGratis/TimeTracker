@@ -37,13 +37,13 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/companyName_layout"
+                android:id="@+id/workflowName_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Company Name">
+                android:hint="Workflow Name">
 
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                    android:id="@+id/companyName"
+                    android:id="@+id/workflowName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 

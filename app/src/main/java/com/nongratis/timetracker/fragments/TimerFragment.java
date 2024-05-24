@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,7 +25,7 @@ public class TimerFragment extends Fragment {
     private boolean isRunning = false;
     private long startTime = 0L;
     private Handler handler = new Handler();
-    private MaterialAutoCompleteTextView companyName;
+    private MaterialAutoCompleteTextView workflowName;
 
 
     private Runnable updateTimer = new Runnable() {
@@ -49,8 +48,8 @@ public class TimerFragment extends Fragment {
 
         timerDisplay = view.findViewById(R.id.timer_display);
         startStopButton = view.findViewById(R.id.start_stop_button);
-        companyName = view.findViewById(R.id.companyName);
-        setupDropdown(companyName);
+        workflowName = view.findViewById(R.id.workflowName);
+        setupDropdown(workflowName);
 
         startStopButton.setOnClickListener(v -> {
             if (isRunning) {
