@@ -5,12 +5,18 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.nongratis.timetracker.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TimerFragment extends Fragment {
 
@@ -19,6 +25,7 @@ public class TimerFragment extends Fragment {
     private boolean isRunning = false;
     private long startTime = 0L;
     private Handler handler = new Handler();
+    private MaterialAutoCompleteTextView companyName;
 
     private Runnable updateTimer = new Runnable() {
         @Override
@@ -40,6 +47,8 @@ public class TimerFragment extends Fragment {
 
         timerDisplay = view.findViewById(R.id.timer_display);
         startStopButton = view.findViewById(R.id.start_stop_button);
+        companyName = view.findViewById(R.id.companyName);
+        setupDropdown(companyName);
 
         startStopButton.setOnClickListener(v -> {
             if (isRunning) {
@@ -63,5 +72,20 @@ public class TimerFragment extends Fragment {
         isRunning = false;
         handler.removeCallbacks(updateTimer);
         startStopButton.setText(R.string.start);
+    }
+
+    private void setupDropdown(MaterialAutoCompleteTextView dropdown) {
+        List<String> items = new ArrayList<>();
+        items.add("Add new...");
+        // Add existing items here
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, items);
+        dropdown.setAdapter(adapter);
+
+        dropdown.setOnItemClickListener((parent, view, position, id) -> {
+            if (position == 0) {
+                // Handle "Add new" option
+            }
+        });
     }
 }
