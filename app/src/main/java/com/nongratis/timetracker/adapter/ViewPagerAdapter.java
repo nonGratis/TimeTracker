@@ -19,9 +19,9 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             case 0:
-                return new TimerFragment();
-            case 1:
                 return new DailyTimelineFragment();
+            case 1:
+                return new TimerFragment();
             case 2:
                 return new TimeAnalysisFragment();
             default:
