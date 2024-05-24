@@ -56,12 +56,12 @@ public class TimerFragment extends Fragment {
         isRunning = true;
         startTime = System.currentTimeMillis();
         handler.post(updateTimer);
-        startStopButton.setText("Stop");
+        startStopButton.setText(R.string.stop);
     }
 
     private void stopTimer() {
         isRunning = false;
         handler.removeCallbacks(updateTimer);
-        startStopButton.setText("Start");
+        startStopButton.setText(R.string.start);
     }
 }
