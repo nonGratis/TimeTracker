@@ -22,8 +22,10 @@ public class TimerFragment extends Fragment {
 
     private TextView timerDisplay;
     private ShapeableImageView startStopButton;
+    private ShapeableImageView pauseButton;
     private boolean isRunning = false;
     private long startTime = 0L;
+    private long pauseTime = 0L;
     private Handler handler = new Handler();
     private MaterialAutoCompleteTextView workflowName;
 
@@ -47,13 +49,22 @@ public class TimerFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_timer, container, false);
 
         timerDisplay = view.findViewById(R.id.timer_display);
-        startStopButton = view.findViewById(R.id.start_stop_button);
         workflowName = view.findViewById(R.id.workflowName);
         setupDropdown(workflowName);
 
+        startStopButton = view.findViewById(R.id.start_stop_button);
         startStopButton.setOnClickListener(v -> {
             if (isRunning) {
                 stopTimer();
+            } else {
+                startTimer();
+            }
+        });
+
+        pauseButton = view.findViewById(R.id.pause_button);
+        pauseButton.setOnClickListener(v -> {
+            if (isRunning) {
+                pauseTimer();
             } else {
                 startTimer();
             }
@@ -64,13 +75,23 @@ public class TimerFragment extends Fragment {
 
     private void startTimer() {
         isRunning = true;
-        startTime = System.currentTimeMillis();
+        startTime = System.currentTimeMillis() - pauseTime;
         handler.post(updateTimer);
         startStopButton.setImageResource(R.drawable.ic_stop);
+        pauseButton.setVisibility(View.VISIBLE);
     }
 
     private void stopTimer() {
         isRunning = false;
+        pauseTime = 0L;
+        handler.removeCallbacks(updateTimer);
+        startStopButton.setImageResource(R.drawable.ic_start);
+        pauseButton.setVisibility(View.GONE);
+    }
+
+    private void pauseTimer() {
+        isRunning = false;
+        pauseTime = System.currentTimeMillis() - startTime;
         handler.removeCallbacks(updateTimer);
         startStopButton.setImageResource(R.drawable.ic_start);
     }
