@@ -33,10 +33,10 @@ public class NotificationHelper {
     }
 
     public void startNotification(String timerDuration) {
-        Intent pauseIntent = new Intent(context, PauseReceiver.class);
+        Intent pauseIntent = new Intent("PAUSE_TIMER");
         PendingIntent pausePendingIntent = PendingIntent.getBroadcast(context, 0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        Intent stopIntent = new Intent(context, StopReceiver.class);
+        Intent stopIntent = new Intent("STOP_TIMER");
         PendingIntent stopPendingIntent = PendingIntent.getBroadcast(context, 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
@@ -51,10 +51,10 @@ public class NotificationHelper {
     }
 
     public void updateNotification(String timerDuration) {
-        Intent pauseIntent = new Intent(context, PauseReceiver.class);
+        Intent pauseIntent = new Intent("PAUSE_TIMER");
         PendingIntent pausePendingIntent = PendingIntent.getBroadcast(context, 0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        Intent stopIntent = new Intent(context, StopReceiver.class);
+        Intent stopIntent = new Intent("STOP_TIMER");
         PendingIntent stopPendingIntent = PendingIntent.getBroadcast(context, 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
