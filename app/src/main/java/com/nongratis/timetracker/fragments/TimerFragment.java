@@ -63,19 +63,19 @@ public class TimerFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        notificationHelper = new NotificationHelper(getContext());
+        notificationHelper = new NotificationHelper(requireContext());
 
         IntentFilter filter = new IntentFilter();
         filter.addAction("PAUSE_TIMER");
         filter.addAction("STOP_TIMER");
         filter.addAction("RESUME_TIMER");
-        getActivity().registerReceiver(receiver, filter);
+        requireActivity().registerReceiver(receiver, filter);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        getActivity().unregisterReceiver(receiver);
+        requireActivity().unregisterReceiver(receiver);
     }
 
     @Nullable
