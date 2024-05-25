@@ -8,8 +8,6 @@ import android.os.SystemClock;
 
 import androidx.annotation.Nullable;
 
-import com.nongratis.timetracker.utils.NotificationHelper;
-
 public class TimerService extends Service {
 
     private static final int NOTIFICATION_ID = 1;

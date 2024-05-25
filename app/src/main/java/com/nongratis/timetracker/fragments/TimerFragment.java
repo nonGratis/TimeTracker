@@ -1,7 +1,6 @@
 package com.nongratis.timetracker.fragments;
 
 import android.annotation.SuppressLint;
-import android.app.Notification;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -17,35 +17,27 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.nongratis.timetracker.R;
-import com.nongratis.timetracker.utils.NotificationHelper;
+import com.nongratis.timetracker.utils.TimerLogic;
 import com.nongratis.timetracker.utils.TimerService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class TimerFragment extends Fragment {
 
     private TextView timerDisplay;
     private ShapeableImageView startStopButton;
     private ShapeableImageView pauseButton;
-    private boolean isRunning = false;
-    private long startTime = 0L;
-    private long pauseTime = 0L;
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
     private MaterialAutoCompleteTextView workflowName;
+    private final TimerLogic timerLogic = new TimerLogic();
 
 
-    private Runnable updateTimer = new Runnable() {
+    private final Runnable updateTimer = new Runnable() {
         @SuppressLint("DefaultLocale")
         @Override
         public void run() {
-            long elapsedTime = System.currentTimeMillis() - startTime;
-            int seconds = (int) (elapsedTime / 1000);
-            int minutes = seconds / 60;
-            int hours = minutes / 60;
-            seconds = seconds % 60;
-            timerDisplay.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+            timerDisplay.setText(timerLogic.getElapsedTime());
             handler.postDelayed(this, 1000);
         }
     };
@@ -61,7 +53,7 @@ public class TimerFragment extends Fragment {
 
         startStopButton = view.findViewById(R.id.start_stop_button);
         startStopButton.setOnClickListener(v -> {
-            if (isRunning) {
+            if (timerLogic.isRunning()) {
                 stopTimer();
             } else {
                 startTimer();
@@ -70,7 +62,7 @@ public class TimerFragment extends Fragment {
 
         pauseButton = view.findViewById(R.id.pause_button);
         pauseButton.setOnClickListener(v -> {
-            if (isRunning) {
+            if (timerLogic.isRunning()) {
                 pauseTimer();
             } else {
                 startTimer();
@@ -81,34 +73,36 @@ public class TimerFragment extends Fragment {
     }
 
     private void startTimer() {
-        isRunning = true;
-        startTime = System.currentTimeMillis() - pauseTime;
-        handler.post(updateTimer);
-        startStopButton.setImageResource(R.drawable.ic_stop);
-        pauseButton.setVisibility(View.VISIBLE);
-
+        timerLogic.startTimer();
+        updateUI();
         // Start the TimerService
         Intent intent = new Intent(getContext(), TimerService.class);
         getContext().startService(intent);
     }
 
     private void stopTimer() {
-        isRunning = false;
-        pauseTime = 0L;
-        handler.removeCallbacks(updateTimer);
-        startStopButton.setImageResource(R.drawable.ic_start);
-        pauseButton.setVisibility(View.GONE);
-
+        timerLogic.stopTimer();
+        updateUI();
         // Stop the TimerService
         Intent intent = new Intent(getContext(), TimerService.class);
         getContext().stopService(intent);
     }
 
     private void pauseTimer() {
-        isRunning = false;
-        pauseTime = System.currentTimeMillis() - startTime;
-        handler.removeCallbacks(updateTimer);
-        startStopButton.setImageResource(R.drawable.ic_start);
+        timerLogic.pauseTimer();
+        updateUI();
+    }
+
+    private void updateUI() {
+        if (timerLogic.isRunning()) {
+            handler.post(updateTimer);
+            startStopButton.setImageResource(R.drawable.ic_stop);
+            pauseButton.setVisibility(View.VISIBLE);
+        } else {
+            handler.removeCallbacks(updateTimer);
+            startStopButton.setImageResource(R.drawable.ic_start);
+            pauseButton.setVisibility(View.GONE);
+        }
     }
 
     private void setupDropdown(MaterialAutoCompleteTextView dropdown) {
