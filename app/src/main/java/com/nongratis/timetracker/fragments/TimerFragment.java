@@ -117,6 +117,7 @@ public class TimerFragment extends Fragment {
     private void stopTimer() {
         timerLogic.stopTimer();
         notificationHelper.updateNotification(timerLogic.getElapsedTime(), false);
+        timerDisplay.setText(R.string.start_time);
         updateUI();
     }
 
