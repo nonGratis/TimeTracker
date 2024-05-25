@@ -68,6 +68,7 @@ public class TimerFragment extends Fragment {
         IntentFilter filter = new IntentFilter();
         filter.addAction("PAUSE_TIMER");
         filter.addAction("STOP_TIMER");
+        filter.addAction("RESUME_TIMER");
         getActivity().registerReceiver(receiver, filter);
     }
 
