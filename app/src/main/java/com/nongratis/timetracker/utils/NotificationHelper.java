@@ -34,17 +34,10 @@ public class NotificationHelper {
 
     public void startNotification(String timerDuration) {
         Intent pauseIntent = new Intent(context, PauseReceiver.class);
-        PendingIntent pausePendingIntent;
-        Intent stopIntent = new Intent(context, StopReceiver.class);
-        PendingIntent stopPendingIntent;
+        PendingIntent pausePendingIntent = PendingIntent.getBroadcast(context, 0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            pausePendingIntent = PendingIntent.getBroadcast(context, 0, pauseIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
-            stopPendingIntent = PendingIntent.getBroadcast(context, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
-        } else {
-            pausePendingIntent = PendingIntent.getBroadcast(context, 0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            stopPendingIntent = PendingIntent.getBroadcast(context, 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        }
+        Intent stopIntent = new Intent(context, StopReceiver.class);
+        PendingIntent stopPendingIntent = PendingIntent.getBroadcast(context, 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_start)
@@ -58,10 +51,18 @@ public class NotificationHelper {
     }
 
     public void updateNotification(String timerDuration) {
+        Intent pauseIntent = new Intent(context, PauseReceiver.class);
+        PendingIntent pausePendingIntent = PendingIntent.getBroadcast(context, 0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        Intent stopIntent = new Intent(context, StopReceiver.class);
+        PendingIntent stopPendingIntent = PendingIntent.getBroadcast(context, 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
         Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_start)
                 .setContentTitle("Timer Running")
                 .setContentText(timerDuration)
+                .addAction(R.drawable.ic_pause, "Pause", pausePendingIntent)
+                .addAction(R.drawable.ic_stop, "Stop", stopPendingIntent)
                 .build();
 
         notificationManager.notify(NOTIFICATION_ID, notification);

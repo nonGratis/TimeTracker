@@ -1,6 +1,10 @@
 package com.nongratis.timetracker.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -32,7 +36,6 @@ public class TimerFragment extends Fragment {
     private final TimerLogic timerLogic = new TimerLogic();
     private NotificationHelper notificationHelper;
 
-
     private final Runnable updateTimer = new Runnable() {
         @SuppressLint("DefaultLocale")
         @Override
@@ -44,11 +47,34 @@ public class TimerFragment extends Fragment {
         }
     };
 
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if ("PAUSE_TIMER".equals(intent.getAction())) {
+                pauseTimer();
+            } else if ("STOP_TIMER".equals(intent.getAction())) {
+                stopTimer();
+            }
+        }
+    };
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         notificationHelper = new NotificationHelper(getContext());
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("PAUSE_TIMER");
+        filter.addAction("STOP_TIMER");
+        getActivity().registerReceiver(receiver, filter);
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getActivity().unregisterReceiver(receiver);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
