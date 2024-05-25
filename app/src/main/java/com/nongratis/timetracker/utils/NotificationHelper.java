@@ -46,12 +46,12 @@ public class NotificationHelper {
                 .setSmallIcon(R.drawable.ic_start)
                 .setContentTitle("Timer Running")
                 .setContentText(timerDuration)
-                .addAction(R.drawable.ic_stop, "Stop", stopPendingIntent);
+                .addAction(R.drawable.ic_stop, context.getString(R.string.stop), stopPendingIntent);
 
         if (isPaused) {
-            builder.addAction(R.drawable.ic_start, "Resume", resumePendingIntent);
+            builder.addAction(R.drawable.ic_start, context.getString(R.string.resume), resumePendingIntent);
         } else {
-            builder.addAction(R.drawable.ic_pause, "Pause", pausePendingIntent);
+            builder.addAction(R.drawable.ic_pause, context.getString(R.string.pause), pausePendingIntent);
         }
 
         Notification notification = builder.build();
