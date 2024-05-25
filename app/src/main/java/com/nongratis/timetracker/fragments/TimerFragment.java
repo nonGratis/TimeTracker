@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.nongratis.timetracker.AppDatabaseInitializer;
+import com.nongratis.timetracker.Constants;
 import com.nongratis.timetracker.R;
 import com.nongratis.timetracker.data.dao.TaskDao;
 import com.nongratis.timetracker.data.repository.TaskRepository;
@@ -48,18 +49,18 @@ public class TimerFragment extends Fragment {
             String elapsedTime = timerLogic.getElapsedTime();
             timerDisplay.setText(elapsedTime);
             notificationHelper.updateNotification(elapsedTime, false);
-            handler.postDelayed(this, 1000);
+            handler.postDelayed(this, Constants.NOTIFICATION_DELAY);
         }
     };
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if ("PAUSE_TIMER".equals(intent.getAction())) {
+            if (Constants.ACTION_PAUSE_TIMER.equals(intent.getAction())) {
                 pauseTimer();
-            } else if ("STOP_TIMER".equals(intent.getAction())) {
+            } else if (Constants.ACTION_STOP_TIMER.equals(intent.getAction())) {
                 stopTimer();
-            } else if ("RESUME_TIMER".equals(intent.getAction())) {
+            } else if (Constants.ACTION_RESUME_TIMER.equals(intent.getAction())) {
                 resumeTimer();
             }
         }
@@ -76,9 +77,9 @@ public class TimerFragment extends Fragment {
         taskViewModel = new ViewModelProvider(this, factory).get(TaskViewModel.class);
 
         IntentFilter filter = new IntentFilter();
-        filter.addAction("PAUSE_TIMER");
-        filter.addAction("STOP_TIMER");
-        filter.addAction("RESUME_TIMER");
+        filter.addAction(Constants.ACTION_PAUSE_TIMER);
+        filter.addAction(Constants.ACTION_STOP_TIMER);
+        filter.addAction(Constants.ACTION_RESUME_TIMER);
         requireActivity().registerReceiver(receiver, filter);
     }
 
