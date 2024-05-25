@@ -10,7 +10,11 @@ public class TaskRepository {
         this.taskDao = taskDao;
     }
 
-    public void insertTask(Task task) {
-        taskDao.insert(task);
+    public void insertTask(Task task) throws Exception {
+        try {
+            taskDao.insert(task);
+        } catch (Exception e) {
+            throw new Exception("Error inserting task", e);
+        }
     }
 }
