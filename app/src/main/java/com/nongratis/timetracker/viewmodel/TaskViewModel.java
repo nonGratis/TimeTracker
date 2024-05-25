@@ -18,6 +18,6 @@ public class TaskViewModel extends ViewModel {
         task.setDescription(description);
         task.setStartTime(startTime);
         task.setEndTime(endTime);
-        taskRepository.insertTask(task);
+        new Thread(() -> taskRepository.insertTask(task)).start();
     }
 }
