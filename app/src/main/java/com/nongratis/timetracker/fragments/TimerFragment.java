@@ -126,18 +126,23 @@ public class TimerFragment extends Fragment {
     }
 
     private void stopTimer() {
-        timerLogic.stopTimer();
-        notificationHelper.updateNotification(timerLogic.getElapsedTime(), false);
-        timerDisplay.setText(R.string.start_time);
-        updateUI();
+        try {
+            timerLogic.stopTimer();
+            notificationHelper.updateNotification(timerLogic.getElapsedTime(), false);
+            timerDisplay.setText(R.string.start_time);
+            updateUI();
 
-        // Save task
-        String workflowName = this.workflowName.getText().toString();
-        String projectName = this.projectName.getText().toString();
-        String description = this.description.getText().toString();
-        long startTime = timerLogic.getStartTime();
-        long endTime = System.currentTimeMillis();
-        taskViewModel.saveTask(workflowName, projectName, description, startTime, endTime);
+            // Save task
+            String workflowName = this.workflowName.getText().toString();
+            String projectName = this.projectName.getText().toString();
+            String description = this.description.getText().toString();
+            long startTime = timerLogic.getStartTime();
+            long endTime = System.currentTimeMillis();
+            taskViewModel.saveTask(workflowName, projectName, description, startTime, endTime);
+        } catch (Exception e) {
+            // Handle or log the exception
+            e.printStackTrace();
+        }
     }
 
     private void pauseTimer() {
