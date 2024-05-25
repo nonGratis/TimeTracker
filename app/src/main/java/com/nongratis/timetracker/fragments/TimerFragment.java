@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -28,9 +27,6 @@ import com.nongratis.timetracker.utils.NotificationHelper;
 import com.nongratis.timetracker.utils.TimerLogic;
 import com.nongratis.timetracker.viewmodel.TaskViewModel;
 import com.nongratis.timetracker.viewmodel.ViewModelProvider.TaskViewModelFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class TimerFragment extends Fragment {
 
