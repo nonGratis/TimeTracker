@@ -1,7 +1,6 @@
 package com.nongratis.timetracker.fragments;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -18,7 +17,6 @@ import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.nongratis.timetracker.R;
 import com.nongratis.timetracker.utils.TimerLogic;
-import com.nongratis.timetracker.utils.TimerService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,17 +73,13 @@ public class TimerFragment extends Fragment {
     private void startTimer() {
         timerLogic.startTimer();
         updateUI();
-        // Start the TimerService
-        Intent intent = new Intent(getContext(), TimerService.class);
-        getContext().startService(intent);
+
     }
 
     private void stopTimer() {
         timerLogic.stopTimer();
         updateUI();
-        // Stop the TimerService
-        Intent intent = new Intent(getContext(), TimerService.class);
-        getContext().stopService(intent);
+
     }
 
     private void pauseTimer() {
