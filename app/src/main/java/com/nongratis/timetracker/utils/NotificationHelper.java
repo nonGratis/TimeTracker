@@ -32,39 +32,33 @@ public class NotificationHelper {
         }
     }
 
-    public void startNotification(String timerDuration) {
+    public void startNotification(String timerDuration, boolean isPaused) {
         Intent pauseIntent = new Intent("PAUSE_TIMER");
         PendingIntent pausePendingIntent = PendingIntent.getBroadcast(context, 0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        Intent resumeIntent = new Intent("RESUME_TIMER");
+        PendingIntent resumePendingIntent = PendingIntent.getBroadcast(context, 0, resumeIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         Intent stopIntent = new Intent("STOP_TIMER");
         PendingIntent stopPendingIntent = PendingIntent.getBroadcast(context, 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_start)
                 .setContentTitle("Timer Running")
                 .setContentText(timerDuration)
-                .addAction(R.drawable.ic_pause, "Pause", pausePendingIntent)
-                .addAction(R.drawable.ic_stop, "Stop", stopPendingIntent)
-                .build();
+                .addAction(R.drawable.ic_stop, "Stop", stopPendingIntent);
 
+        if (isPaused) {
+            builder.addAction(R.drawable.ic_start, "Resume", resumePendingIntent);
+        } else {
+            builder.addAction(R.drawable.ic_pause, "Pause", pausePendingIntent);
+        }
+
+        Notification notification = builder.build();
         notificationManager.notify(NOTIFICATION_ID, notification);
     }
 
-    public void updateNotification(String timerDuration) {
-        Intent pauseIntent = new Intent("PAUSE_TIMER");
-        PendingIntent pausePendingIntent = PendingIntent.getBroadcast(context, 0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-        Intent stopIntent = new Intent("STOP_TIMER");
-        PendingIntent stopPendingIntent = PendingIntent.getBroadcast(context, 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-        Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_start)
-                .setContentTitle("Timer Running")
-                .setContentText(timerDuration)
-                .addAction(R.drawable.ic_pause, "Pause", pausePendingIntent)
-                .addAction(R.drawable.ic_stop, "Stop", stopPendingIntent)
-                .build();
-
-        notificationManager.notify(NOTIFICATION_ID, notification);
+    public void updateNotification(String timerDuration, boolean isPaused) {
+        startNotification(timerDuration, isPaused);
     }
 }

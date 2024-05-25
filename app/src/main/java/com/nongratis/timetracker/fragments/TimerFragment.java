@@ -42,7 +42,7 @@ public class TimerFragment extends Fragment {
         public void run() {
             String elapsedTime = timerLogic.getElapsedTime();
             timerDisplay.setText(elapsedTime);
-            notificationHelper.updateNotification(elapsedTime);
+            notificationHelper.updateNotification(elapsedTime, false);
             handler.postDelayed(this, 1000);
         }
     };
@@ -54,6 +54,8 @@ public class TimerFragment extends Fragment {
                 pauseTimer();
             } else if ("STOP_TIMER".equals(intent.getAction())) {
                 stopTimer();
+            } else if ("RESUME_TIMER".equals(intent.getAction())) {
+                resumeTimer();
             }
         }
     };
@@ -107,19 +109,25 @@ public class TimerFragment extends Fragment {
 
     private void startTimer() {
         timerLogic.startTimer();
-        notificationHelper.startNotification(timerLogic.getElapsedTime());
+        notificationHelper.startNotification(timerLogic.getElapsedTime(), false);
         updateUI();
     }
 
     private void stopTimer() {
         timerLogic.stopTimer();
-        notificationHelper.updateNotification(timerLogic.getElapsedTime());
+        notificationHelper.updateNotification(timerLogic.getElapsedTime(), false);
         updateUI();
     }
 
     private void pauseTimer() {
         timerLogic.pauseTimer();
-        notificationHelper.updateNotification(timerLogic.getElapsedTime());
+        notificationHelper.updateNotification(timerLogic.getElapsedTime(), true);
+        updateUI();
+    }
+
+    private void resumeTimer() {
+        timerLogic.startTimer();
+        notificationHelper.updateNotification(timerLogic.getElapsedTime(), false);
         updateUI();
     }
 

@@ -27,8 +27,9 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".PauseReceiver" />
-        <receiver android:name=".StopReceiver" />
+        <receiver android:name=".utils.PauseReceiver" />
+        <receiver android:name=".utils.StopReceiver" />
+        <receiver android:name=".utils.ResumeReceiver" />
     </application>
 
 </manifest>
