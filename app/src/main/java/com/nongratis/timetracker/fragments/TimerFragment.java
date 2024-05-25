@@ -127,7 +127,6 @@ public class TimerFragment extends Fragment {
 
     private void stopTimer() {
         try {
-            timerLogic.stopTimer();
             notificationHelper.updateNotification(timerLogic.getElapsedTime(), false);
             timerDisplay.setText(R.string.start_time);
             updateUI();
@@ -139,6 +138,8 @@ public class TimerFragment extends Fragment {
             long startTime = timerLogic.getStartTime();
             long endTime = System.currentTimeMillis();
             taskViewModel.saveTask(workflowName, projectName, description, startTime, endTime);
+
+            timerLogic.stopTimer();
         } catch (Exception e) {
             // Handle or log the exception
             e.printStackTrace();

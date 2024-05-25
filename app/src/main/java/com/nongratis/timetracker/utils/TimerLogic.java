@@ -19,7 +19,6 @@ public class TimerLogic {
         isRunning = false;
         pauseTime = 0L;
         startTime = 0L;
-
     }
 
     public void pauseTimer() {
