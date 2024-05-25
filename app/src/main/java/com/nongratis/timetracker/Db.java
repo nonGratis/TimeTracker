@@ -4,7 +4,7 @@ import android.app.Application;
 import androidx.room.Room;
 import com.nongratis.timetracker.data.database.AppDatabase;
 
-public class Timer extends Application {
+public class Db extends Application {
     private static AppDatabase database;
 
     @Override

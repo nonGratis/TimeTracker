@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.nongratis.timetracker.R;
+import com.nongratis.timetracker.utils.NotificationHelper;
 import com.nongratis.timetracker.utils.TimerLogic;
 
 import java.util.ArrayList;
@@ -29,17 +30,25 @@ public class TimerFragment extends Fragment {
     private final Handler handler = new Handler();
     private MaterialAutoCompleteTextView workflowName;
     private final TimerLogic timerLogic = new TimerLogic();
+    private NotificationHelper notificationHelper;
 
 
     private final Runnable updateTimer = new Runnable() {
         @SuppressLint("DefaultLocale")
         @Override
         public void run() {
-            timerDisplay.setText(timerLogic.getElapsedTime());
+            String elapsedTime = timerLogic.getElapsedTime();
+            timerDisplay.setText(elapsedTime);
+            notificationHelper.updateNotification(elapsedTime);
             handler.postDelayed(this, 1000);
         }
     };
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        notificationHelper = new NotificationHelper(getContext());
+    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -72,18 +81,19 @@ public class TimerFragment extends Fragment {
 
     private void startTimer() {
         timerLogic.startTimer();
+        notificationHelper.startNotification(timerLogic.getElapsedTime());
         updateUI();
-
     }
 
     private void stopTimer() {
         timerLogic.stopTimer();
+        notificationHelper.updateNotification(timerLogic.getElapsedTime());
         updateUI();
-
     }
 
     private void pauseTimer() {
         timerLogic.pauseTimer();
+        notificationHelper.updateNotification(timerLogic.getElapsedTime());
         updateUI();
     }
 
