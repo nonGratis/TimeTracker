@@ -16,12 +16,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
+import com.nongratis.timetracker.Db;
 import com.nongratis.timetracker.R;
+import com.nongratis.timetracker.data.dao.TaskDao;
+import com.nongratis.timetracker.data.repository.TaskRepository;
 import com.nongratis.timetracker.utils.NotificationHelper;
 import com.nongratis.timetracker.utils.TimerLogic;
+import com.nongratis.timetracker.viewmodel.TaskViewModel;
+import com.nongratis.timetracker.viewmodel.ViewModelProvider.TaskViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +41,7 @@ public class TimerFragment extends Fragment {
     private MaterialAutoCompleteTextView workflowName;
     private final TimerLogic timerLogic = new TimerLogic();
     private NotificationHelper notificationHelper;
+    private TaskViewModel taskViewModel;
 
     private final Runnable updateTimer = new Runnable() {
         @SuppressLint("DefaultLocale")
@@ -64,6 +71,11 @@ public class TimerFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         notificationHelper = new NotificationHelper(requireContext());
+
+        TaskDao taskDao = Db.getDatabase().taskDao();
+        TaskRepository taskRepository = new TaskRepository(taskDao);
+        TaskViewModelFactory factory = new TaskViewModelFactory(taskRepository);
+        taskViewModel = new ViewModelProvider(this, factory).get(TaskViewModel.class);
 
         IntentFilter filter = new IntentFilter();
         filter.addAction("PAUSE_TIMER");
@@ -119,6 +131,14 @@ public class TimerFragment extends Fragment {
         notificationHelper.updateNotification(timerLogic.getElapsedTime(), false);
         timerDisplay.setText(R.string.start_time);
         updateUI();
+
+        // Save task
+        String workflowName = this.workflowName.getText().toString();
+        String projectName = "Your Project Name"; // Replace with actual project name
+        String description = "Your Description"; // Replace with actual description
+        long startTime = timerLogic.getStartTime();
+        long endTime = System.currentTimeMillis();
+        taskViewModel.saveTask(workflowName, projectName, description, startTime, endTime);
     }
 
     private void pauseTimer() {

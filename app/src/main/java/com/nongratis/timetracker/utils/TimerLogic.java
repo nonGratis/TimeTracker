@@ -44,6 +44,10 @@ public class TimerLogic {
         }
     }
 
+    public long getStartTime() {
+        return startTime;
+    }
+
     public boolean isRunning() {
         return isRunning;
     }
