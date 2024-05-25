@@ -5,7 +5,6 @@ public class TimerLogic {
     private long startTime = 0L;
     private long pauseTime = 0L;
     private boolean isRunning = false;
-//    private boolean isPaused = false;
 
     public void startTimer() {
         isRunning = true;
@@ -28,19 +27,15 @@ public class TimerLogic {
     }
 
     public String getElapsedTime() {
-        long elapsedTime;
-        if (isRunning) {
-            elapsedTime = System.currentTimeMillis() - startTime;
-        } else {
-            elapsedTime = pauseTime;
-        }
+        long elapsedTime = getElapsedTimeMillis();
         int seconds = (int) (elapsedTime / 1000);
         int minutes = seconds / 60;
         int hours = minutes / 60;
         seconds = seconds % 60;
         return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
-    public long getElapsedTimeMillis() {
+
+    protected long getElapsedTimeMillis() {
         if (isRunning) {
             return System.currentTimeMillis() - startTime;
         } else {

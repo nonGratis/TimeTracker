@@ -27,7 +27,10 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".utils.TimerService" />
+        <service
+            android:name=".utils.TimerService"
+            android:foregroundServiceType="specialUse"
+            tools:ignore="ForegroundServicePermission" />
     </application>
 
 </manifest>

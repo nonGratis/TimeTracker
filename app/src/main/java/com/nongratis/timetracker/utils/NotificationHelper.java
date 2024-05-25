@@ -30,10 +30,10 @@ public class NotificationHelper {
         }
     }
 
-    public Notification getNotification(String title, String content) {
+    public Notification getNotification(String title, String elapsedTime) {
         return new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setContentTitle(title)
-                .setContentText(content)
+                .setContentText(elapsedTime)
                 .setSmallIcon(R.drawable.ic_start)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT) // set the priority to high
                 .build();

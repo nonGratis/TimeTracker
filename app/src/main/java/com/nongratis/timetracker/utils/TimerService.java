@@ -12,17 +12,18 @@ public class TimerService extends Service {
 
     private static final int NOTIFICATION_ID = 1;
     private NotificationHelper notificationHelper;
-    private long startTime;
+    private TimerLogic timerLogic;
 
     @Override
     public void onCreate() {
         super.onCreate();
         notificationHelper = new NotificationHelper(this);
+        timerLogic = new TimerLogic();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        startTime = System.currentTimeMillis();
+        timerLogic.startTimer();
         startForegroundService();
         return START_STICKY;
     }
@@ -30,6 +31,7 @@ public class TimerService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        timerLogic.stopTimer();
         stopForeground(true);
     }
 
@@ -40,23 +42,16 @@ public class TimerService extends Service {
     }
 
     private void startForegroundService() {
-        Notification notification = notificationHelper.getNotification("Timer Started", getElapsedTime());
+        Notification notification = notificationHelper.getNotification("Timer Started", timerLogic.getElapsedTime());
         startForeground(NOTIFICATION_ID, notification);
 
         new Thread(() -> {
             while (true) {
-                SystemClock.sleep(1000);
-                notificationHelper.notify(NOTIFICATION_ID, notificationHelper.getNotification("Timer Started", getElapsedTime()));
+                if (timerLogic.isRunning()) {
+                    SystemClock.sleep(1000);
+                    notificationHelper.notify(NOTIFICATION_ID, notificationHelper.getNotification("Timer Started", timerLogic.getElapsedTime()));
+                }
             }
         }).start();
-    }
-
-    private String getElapsedTime() {
-        long elapsedTime = System.currentTimeMillis() - startTime;
-        int seconds = (int) (elapsedTime / 1000);
-        int minutes = seconds / 60;
-        int hours = minutes / 60;
-        seconds = seconds % 60;
-        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 }
