@@ -39,6 +39,8 @@ public class TimerFragment extends Fragment {
     private ShapeableImageView pauseButton;
     private final Handler handler = new Handler();
     private MaterialAutoCompleteTextView workflowName;
+    private MaterialAutoCompleteTextView projectName;
+    private MaterialAutoCompleteTextView description;
     private final TimerLogic timerLogic = new TimerLogic();
     private NotificationHelper notificationHelper;
     private TaskViewModel taskViewModel;
@@ -97,7 +99,8 @@ public class TimerFragment extends Fragment {
 
         timerDisplay = view.findViewById(R.id.timer_display);
         workflowName = view.findViewById(R.id.workflowName);
-        setupDropdown(workflowName);
+        projectName = view.findViewById(R.id.projectName);
+        description = view.findViewById(R.id.description);
 
         startStopButton = view.findViewById(R.id.start_stop_button);
         startStopButton.setOnClickListener(v -> {
@@ -134,8 +137,8 @@ public class TimerFragment extends Fragment {
 
         // Save task
         String workflowName = this.workflowName.getText().toString();
-        String projectName = "Your Project Name"; // Replace with actual project name
-        String description = "Your Description"; // Replace with actual description
+        String projectName = this.projectName.getText().toString();
+        String description = this.description.getText().toString();
         long startTime = timerLogic.getStartTime();
         long endTime = System.currentTimeMillis();
         taskViewModel.saveTask(workflowName, projectName, description, startTime, endTime);
@@ -163,20 +166,5 @@ public class TimerFragment extends Fragment {
             startStopButton.setImageResource(R.drawable.ic_start);
             pauseButton.setVisibility(View.GONE);
         }
-    }
-
-    private void setupDropdown(MaterialAutoCompleteTextView dropdown) {
-        List<String> items = new ArrayList<>();
-        items.add("Add new...");
-        // Add existing items here
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, items);
-        dropdown.setAdapter(adapter);
-
-        dropdown.setOnItemClickListener((parent, view, position, id) -> {
-            if (position == 0) {
-                // Handle "Add new" option
-            }
-        });
     }
 }
