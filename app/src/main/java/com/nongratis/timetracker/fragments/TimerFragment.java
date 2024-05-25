@@ -19,7 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
-import com.nongratis.timetracker.Db;
+import com.nongratis.timetracker.AppDatabaseInitializer;
 import com.nongratis.timetracker.R;
 import com.nongratis.timetracker.data.dao.TaskDao;
 import com.nongratis.timetracker.data.repository.TaskRepository;
@@ -70,7 +70,7 @@ public class TimerFragment extends Fragment {
         super.onCreate(savedInstanceState);
         notificationHelper = new NotificationHelper(requireContext());
 
-        TaskDao taskDao = Db.getDatabase().taskDao();
+        TaskDao taskDao = AppDatabaseInitializer.getDatabase().taskDao();
         TaskRepository taskRepository = new TaskRepository(taskDao);
         TaskViewModelFactory factory = new TaskViewModelFactory(taskRepository);
         taskViewModel = new ViewModelProvider(this, factory).get(TaskViewModel.class);
