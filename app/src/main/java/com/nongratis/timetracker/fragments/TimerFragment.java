@@ -128,10 +128,6 @@ public class TimerFragment extends Fragment {
 
     private void stopTimer() {
         try {
-            notificationHelper.updateNotification(timerLogic.getElapsedTime(), false);
-            timerDisplay.setText(R.string.start_time);
-            updateUI();
-
             // Save task
             String workflowName = this.workflowName.getText().toString();
             String projectName = this.projectName.getText().toString();
@@ -140,7 +136,11 @@ public class TimerFragment extends Fragment {
             long endTime = System.currentTimeMillis();
             taskViewModel.saveTask(workflowName, projectName, description, startTime, endTime);
 
+            // Stop timer
             timerLogic.stopTimer();
+            updateUI();
+            notificationHelper.updateNotification(timerLogic.getElapsedTime(), false);
+            timerDisplay.setText(R.string.start_time);
         } catch (Exception e) {
             // Handle or log the exception
             e.printStackTrace();
