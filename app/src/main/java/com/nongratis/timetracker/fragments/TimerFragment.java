@@ -24,15 +24,15 @@ import com.nongratis.timetracker.Constants;
 import com.nongratis.timetracker.R;
 import com.nongratis.timetracker.data.dao.TaskDao;
 import com.nongratis.timetracker.data.repository.TaskRepository;
+import com.nongratis.timetracker.managers.TaskManager;
+import com.nongratis.timetracker.managers.TimerManager;
 import com.nongratis.timetracker.utils.NotificationHelper;
-import com.nongratis.timetracker.utils.TimerLogic;
 import com.nongratis.timetracker.viewmodel.TaskViewModel;
 import com.nongratis.timetracker.viewmodel.ViewModelProvider.TaskViewModelFactory;
 
 public class TimerFragment extends Fragment {
 
     private final Handler handler = new Handler();
-    private final TimerLogic timerLogic = new TimerLogic();
     private TextView timerDisplay;
     private ShapeableImageView startStopButton;
     private ShapeableImageView pauseButton;
@@ -40,16 +40,19 @@ public class TimerFragment extends Fragment {
     private MaterialAutoCompleteTextView projectName;
     private MaterialAutoCompleteTextView description;
     private NotificationHelper notificationHelper;
+    private TimerManager timerManager;
     private final Runnable updateTimer = new Runnable() {
         @SuppressLint("DefaultLocale")
         @Override
         public void run() {
-            String elapsedTime = timerLogic.getElapsedTime();
+            String elapsedTime = timerManager.getElapsedTime();
             timerDisplay.setText(elapsedTime);
             notificationHelper.updateNotification(elapsedTime, false);
             handler.postDelayed(this, Constants.NOTIFICATION_DELAY);
         }
     };
+    private TaskManager taskManager;
+    private TaskViewModel taskViewModel;
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -62,7 +65,6 @@ public class TimerFragment extends Fragment {
             }
         }
     };
-    private TaskViewModel taskViewModel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,6 +81,9 @@ public class TimerFragment extends Fragment {
         filter.addAction(Constants.ACTION_STOP_TIMER);
         filter.addAction(Constants.ACTION_RESUME_TIMER);
         requireActivity().registerReceiver(receiver, filter);
+
+        timerManager = new TimerManager();
+        taskManager = new TaskManager(taskViewModel);
     }
 
     @Override
@@ -99,7 +104,7 @@ public class TimerFragment extends Fragment {
 
         startStopButton = view.findViewById(R.id.start_stop_button);
         startStopButton.setOnClickListener(v -> {
-            if (timerLogic.isRunning()) {
+            if (timerManager.isRunning()) {
                 stopTimer();
             } else {
                 startTimer();
@@ -108,7 +113,7 @@ public class TimerFragment extends Fragment {
 
         pauseButton = view.findViewById(R.id.pause_button);
         pauseButton.setOnClickListener(v -> {
-            if (timerLogic.isRunning()) {
+            if (timerManager.isRunning()) {
                 pauseTimer();
             } else {
                 startTimer();
@@ -119,57 +124,40 @@ public class TimerFragment extends Fragment {
     }
 
     private void startTimer() {
-        timerLogic.startTimer();
-        notificationHelper.startNotification(timerLogic.getElapsedTime(), false);
+        timerManager.startTimer();
+        notificationHelper.startNotification(timerManager.getElapsedTime(), false);
         updateUI();
     }
 
     private void stopTimer() {
-        saveCurrentTask();
-
+        taskManager.saveTask(workflowName.getText().toString(), projectName.getText().toString(), description.getText().toString(), timerManager.getStartTime(), System.currentTimeMillis());
         // Stop timer
-        timerLogic.stopTimer();
+        timerManager.stopTimer();
         updateUI();
-        notificationHelper.updateNotification(timerLogic.getElapsedTime(), false);
+        notificationHelper.updateNotification(timerManager.getElapsedTime(), false);
         timerDisplay.setText(R.string.start_time);
     }
 
     private void pauseTimer() {
-        saveCurrentTask();
-        timerLogic.pauseTimer();
-        notificationHelper.updateNotification(timerLogic.getElapsedTime(), true);
+        taskManager.saveTask(workflowName.getText().toString(), projectName.getText().toString(), description.getText().toString(), timerManager.getStartTime(), System.currentTimeMillis());        timerManager.pauseTimer();
+        notificationHelper.updateNotification(timerManager.getElapsedTime(), true);
         updateUI();
     }
 
     private void resumeTimer() {
         startNewTask();
-        timerLogic.startTimer();
-        notificationHelper.updateNotification(timerLogic.getElapsedTime(), false);
+        timerManager.startTimer();
+        notificationHelper.updateNotification(timerManager.getElapsedTime(), false);
         updateUI();
-    }
-
-    private void saveCurrentTask() {
-        try {
-            // Save task
-            String workflowName = this.workflowName.getText().toString();
-            String projectName = this.projectName.getText().toString();
-            String description = this.description.getText().toString();
-            long startTime = timerLogic.getStartTime();
-            long endTime = System.currentTimeMillis();
-            taskViewModel.saveTask(workflowName, projectName, description, startTime, endTime);
-        } catch (Exception e) {
-            // Handle or log the exception
-            e.printStackTrace();
-        }
     }
 
     private void startNewTask() {
         // Reset the start time of the timer
-        timerLogic.startTimer();
+        timerManager.startTimer();
     }
 
     private void updateUI() {
-        if (timerLogic.isRunning()) {
+        if (timerManager.isRunning()) {
             handler.post(updateTimer);
             startStopButton.setImageResource(R.drawable.ic_stop);
             pauseButton.setVisibility(View.VISIBLE);
