@@ -2,12 +2,12 @@ package com.nongratis.timetracker.viewmodel;
 
 import androidx.lifecycle.ViewModel;
 import com.nongratis.timetracker.data.entities.Task;
-import com.nongratis.timetracker.data.repository.TaskRepository;
+import com.nongratis.timetracker.data.repository.ITaskRepository;
 
 public class TaskViewModel extends ViewModel {
-    private final TaskRepository taskRepository;
+    private final ITaskRepository taskRepository;
 
-    public TaskViewModel(TaskRepository taskRepository) {
+    public TaskViewModel(ITaskRepository taskRepository) {
         this.taskRepository = taskRepository;
     }
 

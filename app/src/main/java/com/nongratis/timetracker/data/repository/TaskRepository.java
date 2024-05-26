@@ -4,13 +4,14 @@ import com.nongratis.timetracker.data.dao.TaskDao;
 import com.nongratis.timetracker.data.entities.Task;
 import com.nongratis.timetracker.data.executor.DatabaseExecutor;
 
-public class TaskRepository {
+public class TaskRepository implements ITaskRepository {
     private final TaskDao taskDao;
 
     public TaskRepository(TaskDao taskDao) {
         this.taskDao = taskDao;
     }
 
+    @Override
     public void insertTask(Task task) throws Exception {
         try {
             DatabaseExecutor.getExecutor().execute(() -> {
