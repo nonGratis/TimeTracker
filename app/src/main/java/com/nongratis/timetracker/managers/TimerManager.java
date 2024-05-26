@@ -4,9 +4,21 @@ import com.nongratis.timetracker.utils.TimerLogic;
 
 public class TimerManager {
     private final TimerLogic timerLogic = new TimerLogic();
+    private TimerUpdateListener timerUpdateListener;
+
+    public interface TimerUpdateListener {
+        void onTimerUpdate(String elapsedTime);
+    }
+
+    public void setTimerUpdateListener(TimerUpdateListener listener) {
+        this.timerUpdateListener = listener;
+    }
 
     public void startTimer() {
         timerLogic.startTimer();
+        if (timerUpdateListener != null) {
+            timerUpdateListener.onTimerUpdate(getElapsedTime());
+        }
     }
 
     public void stopTimer() {
