@@ -3,6 +3,7 @@ package com.nongratis.timetracker;
 import android.app.Application;
 import androidx.room.Room;
 import com.nongratis.timetracker.data.database.AppDatabase;
+import com.nongratis.timetracker.data.executor.DatabaseExecutor;
 
 public class AppDatabaseInitializer extends Application {
     private static AppDatabase database;
@@ -20,8 +21,10 @@ public class AppDatabaseInitializer extends Application {
             throw new IllegalStateException("AppDatabaseInitializer instance must be initialized before calling initializeDatabase");
         }
         if (database == null) {
-            database = Room.databaseBuilder(instance.getApplicationContext(),
-                    AppDatabase.class, "timetracker-db").build();
+            DatabaseExecutor.getExecutor().execute(() -> {
+                database = Room.databaseBuilder(instance.getApplicationContext(),
+                        AppDatabase.class, "timetracker-db").build();
+            });
         }
     }
 
