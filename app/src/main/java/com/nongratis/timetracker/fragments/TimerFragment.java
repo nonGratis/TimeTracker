@@ -127,6 +127,30 @@ public class TimerFragment extends Fragment {
     }
 
     private void stopTimer() {
+        saveCurrentTask();
+
+        // Stop timer
+        timerLogic.stopTimer();
+        updateUI();
+        notificationHelper.updateNotification(timerLogic.getElapsedTime(), false);
+        timerDisplay.setText(R.string.start_time);
+    }
+
+    private void pauseTimer() {
+        saveCurrentTask();
+        timerLogic.pauseTimer();
+        notificationHelper.updateNotification(timerLogic.getElapsedTime(), true);
+        updateUI();
+    }
+
+    private void resumeTimer() {
+        startNewTask();
+        timerLogic.startTimer();
+        notificationHelper.updateNotification(timerLogic.getElapsedTime(), false);
+        updateUI();
+    }
+
+    private void saveCurrentTask() {
         try {
             // Save task
             String workflowName = this.workflowName.getText().toString();
@@ -135,28 +159,15 @@ public class TimerFragment extends Fragment {
             long startTime = timerLogic.getStartTime();
             long endTime = System.currentTimeMillis();
             taskViewModel.saveTask(workflowName, projectName, description, startTime, endTime);
-
-            // Stop timer
-            timerLogic.stopTimer();
-            updateUI();
-            notificationHelper.updateNotification(timerLogic.getElapsedTime(), false);
-            timerDisplay.setText(R.string.start_time);
         } catch (Exception e) {
             // Handle or log the exception
             e.printStackTrace();
         }
     }
 
-    private void pauseTimer() {
-        timerLogic.pauseTimer();
-        notificationHelper.updateNotification(timerLogic.getElapsedTime(), true);
-        updateUI();
-    }
-
-    private void resumeTimer() {
+    private void startNewTask() {
+        // Reset the start time of the timer
         timerLogic.startTimer();
-        notificationHelper.updateNotification(timerLogic.getElapsedTime(), false);
-        updateUI();
     }
 
     private void updateUI() {
