@@ -4,9 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-import com.nongratis.timetracker.fragments.TimerFragment;
+
 import com.nongratis.timetracker.fragments.DailyTimelineFragment;
 import com.nongratis.timetracker.fragments.TimeAnalysisFragment;
+import com.nongratis.timetracker.fragments.TimerFragment;
 
 public class ViewPagerAdapter extends FragmentStateAdapter {
 
