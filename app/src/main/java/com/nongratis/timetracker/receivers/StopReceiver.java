@@ -1,4 +1,4 @@
-package com.nongratis.timetracker.utils;
+package com.nongratis.timetracker.receivers;
 
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
@@ -7,6 +7,7 @@ import android.content.Intent;
 
 import com.nongratis.timetracker.Constants;
 import com.nongratis.timetracker.fragments.TimerFragment;
+import com.nongratis.timetracker.utils.NotificationHelper;
 
 public class StopReceiver extends BroadcastReceiver {
     @Override
