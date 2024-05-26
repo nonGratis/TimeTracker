@@ -10,21 +10,24 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
+import com.nongratis.timetracker.AppDatabaseInitializer;
+import com.nongratis.timetracker.Constants;
 import com.nongratis.timetracker.R;
+import com.nongratis.timetracker.data.dao.TaskDao;
+import com.nongratis.timetracker.data.repository.TaskRepository;
 import com.nongratis.timetracker.utils.NotificationHelper;
 import com.nongratis.timetracker.utils.TimerLogic;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.nongratis.timetracker.viewmodel.TaskViewModel;
+import com.nongratis.timetracker.viewmodel.ViewModelProvider.TaskViewModelFactory;
 
 public class TimerFragment extends Fragment {
 
@@ -33,8 +36,11 @@ public class TimerFragment extends Fragment {
     private ShapeableImageView pauseButton;
     private final Handler handler = new Handler();
     private MaterialAutoCompleteTextView workflowName;
+    private MaterialAutoCompleteTextView projectName;
+    private MaterialAutoCompleteTextView description;
     private final TimerLogic timerLogic = new TimerLogic();
     private NotificationHelper notificationHelper;
+    private TaskViewModel taskViewModel;
 
     private final Runnable updateTimer = new Runnable() {
         @SuppressLint("DefaultLocale")
@@ -43,18 +49,18 @@ public class TimerFragment extends Fragment {
             String elapsedTime = timerLogic.getElapsedTime();
             timerDisplay.setText(elapsedTime);
             notificationHelper.updateNotification(elapsedTime, false);
-            handler.postDelayed(this, 1000);
+            handler.postDelayed(this, Constants.NOTIFICATION_DELAY);
         }
     };
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if ("PAUSE_TIMER".equals(intent.getAction())) {
+            if (Constants.ACTION_PAUSE_TIMER.equals(intent.getAction())) {
                 pauseTimer();
-            } else if ("STOP_TIMER".equals(intent.getAction())) {
+            } else if (Constants.ACTION_STOP_TIMER.equals(intent.getAction())) {
                 stopTimer();
-            } else if ("RESUME_TIMER".equals(intent.getAction())) {
+            } else if (Constants.ACTION_RESUME_TIMER.equals(intent.getAction())) {
                 resumeTimer();
             }
         }
@@ -65,10 +71,15 @@ public class TimerFragment extends Fragment {
         super.onCreate(savedInstanceState);
         notificationHelper = new NotificationHelper(requireContext());
 
+        TaskDao taskDao = AppDatabaseInitializer.getDatabase().taskDao();
+        TaskRepository taskRepository = new TaskRepository(taskDao);
+        TaskViewModelFactory factory = new TaskViewModelFactory(taskRepository);
+        taskViewModel = new ViewModelProvider(this, factory).get(TaskViewModel.class);
+
         IntentFilter filter = new IntentFilter();
-        filter.addAction("PAUSE_TIMER");
-        filter.addAction("STOP_TIMER");
-        filter.addAction("RESUME_TIMER");
+        filter.addAction(Constants.ACTION_PAUSE_TIMER);
+        filter.addAction(Constants.ACTION_STOP_TIMER);
+        filter.addAction(Constants.ACTION_RESUME_TIMER);
         requireActivity().registerReceiver(receiver, filter);
     }
 
@@ -85,7 +96,8 @@ public class TimerFragment extends Fragment {
 
         timerDisplay = view.findViewById(R.id.timer_display);
         workflowName = view.findViewById(R.id.workflowName);
-        setupDropdown(workflowName);
+        projectName = view.findViewById(R.id.projectName);
+        description = view.findViewById(R.id.description);
 
         startStopButton = view.findViewById(R.id.start_stop_button);
         startStopButton.setOnClickListener(v -> {
@@ -115,10 +127,24 @@ public class TimerFragment extends Fragment {
     }
 
     private void stopTimer() {
-        timerLogic.stopTimer();
-        notificationHelper.updateNotification(timerLogic.getElapsedTime(), false);
-        timerDisplay.setText(R.string.start_time);
-        updateUI();
+        try {
+            // Save task
+            String workflowName = this.workflowName.getText().toString();
+            String projectName = this.projectName.getText().toString();
+            String description = this.description.getText().toString();
+            long startTime = timerLogic.getStartTime();
+            long endTime = System.currentTimeMillis();
+            taskViewModel.saveTask(workflowName, projectName, description, startTime, endTime);
+
+            // Stop timer
+            timerLogic.stopTimer();
+            updateUI();
+            notificationHelper.updateNotification(timerLogic.getElapsedTime(), false);
+            timerDisplay.setText(R.string.start_time);
+        } catch (Exception e) {
+            // Handle or log the exception
+            e.printStackTrace();
+        }
     }
 
     private void pauseTimer() {
@@ -143,20 +169,5 @@ public class TimerFragment extends Fragment {
             startStopButton.setImageResource(R.drawable.ic_start);
             pauseButton.setVisibility(View.GONE);
         }
-    }
-
-    private void setupDropdown(MaterialAutoCompleteTextView dropdown) {
-        List<String> items = new ArrayList<>();
-        items.add("Add new...");
-        // Add existing items here
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, items);
-        dropdown.setAdapter(adapter);
-
-        dropdown.setOnItemClickListener((parent, view, position, id) -> {
-            if (position == 0) {
-                // Handle "Add new" option
-            }
-        });
     }
 }

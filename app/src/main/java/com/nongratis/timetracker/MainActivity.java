@@ -4,6 +4,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 import com.nongratis.timetracker.adapter.ViewPagerAdapter;
+import com.nongratis.timetracker.utils.SyncScheduler;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,5 +18,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager2 = findViewById(R.id.viewPager);
         viewPager2.setAdapter(new ViewPagerAdapter(this));
         viewPager2.setCurrentItem(1); // Set the TimerFragment as the initial fragment
+
+        SyncScheduler.schedulePeriodicSync();
     }
 }

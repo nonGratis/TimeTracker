@@ -19,7 +19,6 @@ public class TimerLogic {
         isRunning = false;
         pauseTime = 0L;
         startTime = 0L;
-
     }
 
     public void pauseTimer() {
@@ -42,6 +41,10 @@ public class TimerLogic {
         } else {
             return pauseTime;
         }
+    }
+
+    public long getStartTime() {
+        return startTime;
     }
 
     public boolean isRunning() {
