@@ -1,10 +1,11 @@
-package com.nongratis.timetracker;
+package com.nongratis.timetracker.activities;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.nongratis.timetracker.R;
 import com.nongratis.timetracker.adapter.ViewPagerAdapter;
 import com.nongratis.timetracker.utils.SyncScheduler;
 
