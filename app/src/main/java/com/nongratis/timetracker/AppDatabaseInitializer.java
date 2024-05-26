@@ -11,13 +11,6 @@ public class AppDatabaseInitializer extends Application {
     private static AppDatabase database;
     private static AppDatabaseInitializer instance;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        instance = this;
-        initializeDatabase();
-    }
-
     public static void initializeDatabase() {
         if (instance == null) {
             throw new IllegalStateException("AppDatabaseInitializer instance must be initialized before calling initializeDatabase");
@@ -32,5 +25,12 @@ public class AppDatabaseInitializer extends Application {
 
     public static AppDatabase getDatabase() {
         return database;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        instance = this;
+        initializeDatabase();
     }
 }

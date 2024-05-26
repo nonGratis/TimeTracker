@@ -31,17 +31,15 @@ import com.nongratis.timetracker.viewmodel.ViewModelProvider.TaskViewModelFactor
 
 public class TimerFragment extends Fragment {
 
+    private final Handler handler = new Handler();
+    private final TimerLogic timerLogic = new TimerLogic();
     private TextView timerDisplay;
     private ShapeableImageView startStopButton;
     private ShapeableImageView pauseButton;
-    private final Handler handler = new Handler();
     private MaterialAutoCompleteTextView workflowName;
     private MaterialAutoCompleteTextView projectName;
     private MaterialAutoCompleteTextView description;
-    private final TimerLogic timerLogic = new TimerLogic();
     private NotificationHelper notificationHelper;
-    private TaskViewModel taskViewModel;
-
     private final Runnable updateTimer = new Runnable() {
         @SuppressLint("DefaultLocale")
         @Override
@@ -52,8 +50,7 @@ public class TimerFragment extends Fragment {
             handler.postDelayed(this, Constants.NOTIFICATION_DELAY);
         }
     };
-
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (Constants.ACTION_PAUSE_TIMER.equals(intent.getAction())) {
@@ -65,6 +62,7 @@ public class TimerFragment extends Fragment {
             }
         }
     };
+    private TaskViewModel taskViewModel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
