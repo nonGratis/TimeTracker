@@ -16,12 +16,10 @@ public class NotificationHelper {
     private static final String CHANNEL_ID = "TIMER_CHANNEL";
     private static final String CHANNEL_NAME = "Timer Channel";
     private static final String CHANNEL_DESC = "Channel for timer notifications";
+    private static final int NOTIFICATION_ID = 1;
     private final Context context;
     private final NotificationManager notificationManager;
-    private static final int NOTIFICATION_ID = 1;
-    public static int getNotificationId() {
-        return NOTIFICATION_ID;
-    }
+
     public NotificationHelper(Context context) {
         this.context = context;
         this.notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -29,6 +27,10 @@ public class NotificationHelper {
         NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
         channel.setDescription(CHANNEL_DESC);
         notificationManager.createNotificationChannel(channel);
+    }
+
+    public static int getNotificationId() {
+        return NOTIFICATION_ID;
     }
 
     public void startNotification(String timerDuration, boolean isPaused) {

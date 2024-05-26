@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,36 +25,35 @@ import com.nongratis.timetracker.Constants;
 import com.nongratis.timetracker.R;
 import com.nongratis.timetracker.data.dao.TaskDao;
 import com.nongratis.timetracker.data.repository.TaskRepository;
+import com.nongratis.timetracker.managers.TaskManager;
+import com.nongratis.timetracker.managers.TimerManager;
 import com.nongratis.timetracker.utils.NotificationHelper;
-import com.nongratis.timetracker.utils.TimerLogic;
 import com.nongratis.timetracker.viewmodel.TaskViewModel;
 import com.nongratis.timetracker.viewmodel.ViewModelProvider.TaskViewModelFactory;
 
 public class TimerFragment extends Fragment {
 
+    private final Handler handler = new Handler(Looper.getMainLooper());
     private TextView timerDisplay;
     private ShapeableImageView startStopButton;
     private ShapeableImageView pauseButton;
-    private final Handler handler = new Handler();
     private MaterialAutoCompleteTextView workflowName;
     private MaterialAutoCompleteTextView projectName;
     private MaterialAutoCompleteTextView description;
-    private final TimerLogic timerLogic = new TimerLogic();
     private NotificationHelper notificationHelper;
-    private TaskViewModel taskViewModel;
-
+    private TimerManager timerManager;
     private final Runnable updateTimer = new Runnable() {
         @SuppressLint("DefaultLocale")
         @Override
         public void run() {
-            String elapsedTime = timerLogic.getElapsedTime();
+            String elapsedTime = timerManager.getElapsedTime();
             timerDisplay.setText(elapsedTime);
             notificationHelper.updateNotification(elapsedTime, false);
             handler.postDelayed(this, Constants.NOTIFICATION_DELAY);
         }
     };
-
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+    private TaskManager taskManager;
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (Constants.ACTION_PAUSE_TIMER.equals(intent.getAction())) {
@@ -65,22 +65,13 @@ public class TimerFragment extends Fragment {
             }
         }
     };
+    private TaskViewModel taskViewModel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        notificationHelper = new NotificationHelper(requireContext());
-
-        TaskDao taskDao = AppDatabaseInitializer.getDatabase().taskDao();
-        TaskRepository taskRepository = new TaskRepository(taskDao);
-        TaskViewModelFactory factory = new TaskViewModelFactory(taskRepository);
-        taskViewModel = new ViewModelProvider(this, factory).get(TaskViewModel.class);
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Constants.ACTION_PAUSE_TIMER);
-        filter.addAction(Constants.ACTION_STOP_TIMER);
-        filter.addAction(Constants.ACTION_RESUME_TIMER);
-        requireActivity().registerReceiver(receiver, filter);
+        initManagers();
+        setupBroadcastReceiver();
     }
 
     @Override
@@ -93,7 +84,31 @@ public class TimerFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timer, container, false);
+        setupUI(view);
+        return view;
+    }
 
+    private void initManagers() {
+        notificationHelper = new NotificationHelper(requireContext());
+
+        TaskDao taskDao = AppDatabaseInitializer.getDatabase().taskDao();
+        TaskRepository taskRepository = new TaskRepository(taskDao);
+        TaskViewModelFactory factory = new TaskViewModelFactory(taskRepository);
+        taskViewModel = new ViewModelProvider(this, factory).get(TaskViewModel.class);
+
+        timerManager = new TimerManager();
+        taskManager = new TaskManager(taskViewModel);
+    }
+
+    private void setupBroadcastReceiver() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Constants.ACTION_PAUSE_TIMER);
+        filter.addAction(Constants.ACTION_STOP_TIMER);
+        filter.addAction(Constants.ACTION_RESUME_TIMER);
+        requireActivity().registerReceiver(receiver, filter);
+    }
+
+    private void setupUI(View view) {
         timerDisplay = view.findViewById(R.id.timer_display);
         workflowName = view.findViewById(R.id.workflowName);
         projectName = view.findViewById(R.id.projectName);
@@ -101,7 +116,7 @@ public class TimerFragment extends Fragment {
 
         startStopButton = view.findViewById(R.id.start_stop_button);
         startStopButton.setOnClickListener(v -> {
-            if (timerLogic.isRunning()) {
+            if (timerManager.isRunning()) {
                 stopTimer();
             } else {
                 startTimer();
@@ -110,57 +125,51 @@ public class TimerFragment extends Fragment {
 
         pauseButton = view.findViewById(R.id.pause_button);
         pauseButton.setOnClickListener(v -> {
-            if (timerLogic.isRunning()) {
+            if (timerManager.isRunning()) {
                 pauseTimer();
             } else {
                 startTimer();
             }
         });
-
-        return view;
     }
 
     private void startTimer() {
-        timerLogic.startTimer();
-        notificationHelper.startNotification(timerLogic.getElapsedTime(), false);
-        updateUI();
+        timerManager.startTimer();
+        notificationHelper.startNotification(timerManager.getElapsedTime(), false);
+        updateTimerDisplay();
     }
 
     private void stopTimer() {
-        try {
-            // Save task
-            String workflowName = this.workflowName.getText().toString();
-            String projectName = this.projectName.getText().toString();
-            String description = this.description.getText().toString();
-            long startTime = timerLogic.getStartTime();
-            long endTime = System.currentTimeMillis();
-            taskViewModel.saveTask(workflowName, projectName, description, startTime, endTime);
-
-            // Stop timer
-            timerLogic.stopTimer();
-            updateUI();
-            notificationHelper.updateNotification(timerLogic.getElapsedTime(), false);
-            timerDisplay.setText(R.string.start_time);
-        } catch (Exception e) {
-            // Handle or log the exception
-            e.printStackTrace();
-        }
+        saveCurrentTask();
+        timerManager.stopTimer();
+        updateTimerDisplay();
+        timerDisplay.setText(R.string.start_time);
     }
 
     private void pauseTimer() {
-        timerLogic.pauseTimer();
-        notificationHelper.updateNotification(timerLogic.getElapsedTime(), true);
-        updateUI();
+        saveCurrentTask();
+        timerManager.pauseTimer();
+        notificationHelper.updateNotification(timerManager.getElapsedTime(), true);
+        updateTimerDisplay();
     }
 
     private void resumeTimer() {
-        timerLogic.startTimer();
-        notificationHelper.updateNotification(timerLogic.getElapsedTime(), false);
-        updateUI();
+        startNewTask();
+        timerManager.startTimer();
+        notificationHelper.updateNotification(timerManager.getElapsedTime(), false);
+        updateTimerDisplay();
     }
 
-    private void updateUI() {
-        if (timerLogic.isRunning()) {
+    private void startNewTask() {
+        timerManager.startTimer();
+    }
+
+    private void saveCurrentTask() {
+        taskManager.saveTask(workflowName.getText().toString(), projectName.getText().toString(), description.getText().toString(), timerManager.getStartTime(), System.currentTimeMillis());
+    }
+
+    private void updateTimerDisplay() {
+        if (timerManager.isRunning()) {
             handler.post(updateTimer);
             startStopButton.setImageResource(R.drawable.ic_stop);
             pauseButton.setVisibility(View.VISIBLE);
