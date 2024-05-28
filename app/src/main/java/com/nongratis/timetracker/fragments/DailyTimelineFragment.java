@@ -10,9 +10,15 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.nongratis.timetracker.AppDatabaseInitializer;
 import com.nongratis.timetracker.R;
 import com.nongratis.timetracker.adapter.TimelineAdapter;
+import com.nongratis.timetracker.data.dao.TaskDao;
+import com.nongratis.timetracker.data.repository.TaskRepository;
 import com.nongratis.timetracker.viewmodel.DailyTimelineViewModel;
+import com.nongratis.timetracker.data.repository.ITaskRepository;
+import com.nongratis.timetracker.viewmodel.DailyTimelineViewModelFactory;
 
 public class DailyTimelineFragment extends Fragment {
 
@@ -32,7 +38,11 @@ public class DailyTimelineFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        viewModel = new ViewModelProvider(this).get(DailyTimelineViewModel.class);
+
+        TaskDao taskDao = AppDatabaseInitializer.getDatabase().taskDao();
+        ITaskRepository taskRepository = new TaskRepository(taskDao);
+        DailyTimelineViewModelFactory factory = new DailyTimelineViewModelFactory(taskRepository);
+        viewModel = new ViewModelProvider(this, factory).get(DailyTimelineViewModel.class);
 
         // Assuming dayStart and dayEnd are calculated for the current day
         long dayStart = calculateDayStart();
