@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.github.mikephil.charting.data.PieEntry;
+import com.nongratis.timetracker.data.repository.TimeRepository;
 
 import java.util.List;
 
