@@ -25,7 +25,9 @@ import com.nongratis.timetracker.viewmodel.TaskViewModelFactory;
 import com.nongratis.timetracker.data.entities.Task;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TimeAnalysisFragment extends Fragment {
     private PieChart pieChartWorkflow;
@@ -64,7 +66,7 @@ public class TimeAnalysisFragment extends Fragment {
     }
 
     private void updatePieChart(PieChart pieChart, List<Task> tasks, String type) {
-        List<PieEntry> entries = new ArrayList<>();
+        Map<String, Float> entriesMap = new HashMap<>();
         // Process tasks to create PieEntries based on type (workflow/project)
         for (Task task : tasks) {
             String label;
@@ -76,15 +78,22 @@ public class TimeAnalysisFragment extends Fragment {
             if (label == null || label.isEmpty()) {
                 label = "Other";
             }
-            entries.add(new PieEntry(task.getDuration(), label));
+            float previousDuration = entriesMap.containsKey(label) ? entriesMap.get(label) : 0;
+            entriesMap.put(label, previousDuration + task.getDuration());
+        }
+
+        List<PieEntry> entries = new ArrayList<>();
+        for (Map.Entry<String, Float> entry : entriesMap.entrySet()) {
+            entries.add(new PieEntry(entry.getValue(), entry.getKey()));
         }
 
         PieDataSet dataSet = new PieDataSet(entries, "Time Analysis");
 
-        // Assign different colors for different categories
+        // Assign different saturation for different categories
         List<Integer> colors = new ArrayList<>();
+        int baseColor = getResources().getColor(R.color.purple_200);
         for (int i = 0; i < entries.size(); i++) {
-            colors.add(Color.rgb((i * 40) % 255, (i * 70) % 255, (i * 100) % 255));
+            colors.add(adjustSaturation(baseColor, i / (float) entries.size()));
         }
         dataSet.setColors(colors);
 
@@ -99,5 +108,13 @@ public class TimeAnalysisFragment extends Fragment {
         legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
         legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
         legend.setDrawInside(false);
+    }
+
+    private int adjustSaturation(int color, float factor) {
+        float[] hsv = new float[3];
+        Color.colorToHSV(color, hsv);
+        float minSaturation = 0.10f; // Minimum saturation limit
+        hsv[1] = minSaturation + ((1 - minSaturation) * factor);
+        return Color.HSVToColor(hsv);
     }
 }
