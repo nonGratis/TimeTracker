@@ -40,4 +40,8 @@ public class TimerManager {
     public boolean isRunning() {
         return timerLogic.isRunning();
     }
+
+    public boolean isPaused() {
+        return timerLogic.isPaused();
+    }
 }

@@ -48,7 +48,7 @@ public class TimerFragment extends Fragment {
         public void run() {
             String elapsedTime = timerManager.getElapsedTime();
             timerDisplay.setText(elapsedTime);
-            notificationHelper.updateNotification(elapsedTime, false);
+            notificationHelper.updateNotification(elapsedTime, timerManager.isPaused());
             handler.postDelayed(this, Constants.NOTIFICATION_DELAY);
         }
     };
@@ -131,11 +131,20 @@ public class TimerFragment extends Fragment {
                 startTimer();
             }
         });
+
+        ShapeableImageView deleteButton = view.findViewById(R.id.delete_button);
+        deleteButton.setOnClickListener(v -> {
+            if (timerManager.isRunning() || timerManager.isPaused()) {
+                timerManager.stopTimer();
+                updateTimerDisplay();
+                timerDisplay.setText(R.string.start_time);
+            }
+        });
     }
 
     private void startTimer() {
         timerManager.startTimer();
-        notificationHelper.startNotification(timerManager.getElapsedTime(), false);
+        notificationHelper.startNotification(timerManager.getElapsedTime(), timerManager.isPaused());
         updateTimerDisplay();
     }
 
@@ -149,14 +158,14 @@ public class TimerFragment extends Fragment {
     private void pauseTimer() {
         saveCurrentTask();
         timerManager.pauseTimer();
-        notificationHelper.updateNotification(timerManager.getElapsedTime(), true);
+        notificationHelper.updateNotification(timerManager.getElapsedTime(), timerManager.isPaused());
         updateTimerDisplay();
     }
 
     private void resumeTimer() {
         startNewTask();
         timerManager.startTimer();
-        notificationHelper.updateNotification(timerManager.getElapsedTime(), false);
+        notificationHelper.updateNotification(timerManager.getElapsedTime(), timerManager.isPaused());
         updateTimerDisplay();
     }
 
