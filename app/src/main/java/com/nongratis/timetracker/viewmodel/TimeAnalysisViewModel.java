@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.github.mikephil.charting.data.PieEntry;
+import com.nongratis.timetracker.data.repository.TimePeriod;
 import com.nongratis.timetracker.data.repository.TimeRepository;
 
 import java.util.List;
@@ -33,19 +34,13 @@ public class TimeAnalysisViewModel extends ViewModel {
         return projectASpecificData;
     }
 
-    public LiveData<List<PieEntry>> getProjectBSpecificData() {
-        return projectBSpecificData;
-    }
-
     // Function to update data
-    public void updateData(String period) {
+    public void updateData(TimePeriod period) {
         // Fetch data from repository and update LiveData
         TimeRepository repository = TimeRepository.getInstance();
 
-        totalTime.setValue(repository.getTotalTime(period));
-        workflowData.setValue(repository.getWorkflowData(period));
-        projectData.setValue(repository.getProjectData(period));
-        projectASpecificData.setValue(repository.getProjectSpecificData(period, "ProjectA"));
-        projectBSpecificData.setValue(repository.getProjectSpecificData(period, "ProjectB"));
+        totalTime.setValue(repository.getTotalTime(period.name()));
+        workflowData.setValue(repository.getWorkflowData(period.name()));
+        projectData.setValue(repository.getProjectData(period.name()));
     }
 }

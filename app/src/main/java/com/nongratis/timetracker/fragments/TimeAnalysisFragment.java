@@ -17,6 +17,7 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.nongratis.timetracker.R;
+import com.nongratis.timetracker.data.repository.TimePeriod;
 import com.nongratis.timetracker.viewmodel.TimeAnalysisViewModel;
 
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.List;
 public class TimeAnalysisFragment extends Fragment {
     private TimeAnalysisViewModel viewModel;
     private TextView totalTime;
-    private PieChart pieChartWorkflow, pieChartProject, pieChartProjectA, pieChartProjectB;
+    private PieChart pieChartWorkflow, pieChartProject;
     private Button btnDay, btnWeek, btnMonth;
 
     @Nullable
@@ -35,8 +36,6 @@ public class TimeAnalysisFragment extends Fragment {
         totalTime = view.findViewById(R.id.totalTime);
         pieChartWorkflow = view.findViewById(R.id.pieChartWorkflow);
         pieChartProject = view.findViewById(R.id.pieChartProject);
-        pieChartProjectA = view.findViewById(R.id.pieChartProjectA);
-        pieChartProjectB = view.findViewById(R.id.pieChartProjectB);
         btnDay = view.findViewById(R.id.btnDay);
         btnWeek = view.findViewById(R.id.btnWeek);
         btnMonth = view.findViewById(R.id.btnMonth);
@@ -51,8 +50,6 @@ public class TimeAnalysisFragment extends Fragment {
         viewModel.getTotalTime().observe(getViewLifecycleOwner(), time -> totalTime.setText("Total Time: " + time));
         viewModel.getWorkflowData().observe(getViewLifecycleOwner(), data -> setPieChartData(pieChartWorkflow, data));
         viewModel.getProjectData().observe(getViewLifecycleOwner(), data -> setPieChartData(pieChartProject, data));
-        viewModel.getProjectASpecificData().observe(getViewLifecycleOwner(), data -> setPieChartData(pieChartProjectA, data));
-        viewModel.getProjectBSpecificData().observe(getViewLifecycleOwner(), data -> setPieChartData(pieChartProjectB, data));
 
         // Initialize with default period (e.g., day)
         updateDisplay("day");
@@ -61,7 +58,21 @@ public class TimeAnalysisFragment extends Fragment {
     }
 
     private void updateDisplay(String period) {
-        viewModel.updateData(period);
+        TimePeriod timePeriod;
+        switch (period) {
+            case "day":
+                timePeriod = TimePeriod.DAY;
+                break;
+            case "week":
+                timePeriod = TimePeriod.WEEK;
+                break;
+            case "month":
+                timePeriod = TimePeriod.MONTH;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid time period: " + period);
+        }
+        viewModel.updateData(timePeriod);
     }
 
     private void setPieChartData(PieChart pieChart, List<PieEntry> data) {

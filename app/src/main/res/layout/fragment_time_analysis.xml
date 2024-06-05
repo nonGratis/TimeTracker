@@ -95,20 +95,6 @@
                 android:layout_height="300dp"
                 android:layout_margin="16dp"/>
 
-            <!-- Placeholder for other PieCharts, you can add as many as needed -->
-
-            <com.github.mikephil.charting.charts.PieChart
-                android:id="@+id/pieChartProjectA"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_margin="16dp"/>
-
-            <com.github.mikephil.charting.charts.PieChart
-                android:id="@+id/pieChartProjectB"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_margin="16dp"/>
-
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
