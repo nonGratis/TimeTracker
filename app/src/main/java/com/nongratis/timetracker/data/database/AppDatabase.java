@@ -10,7 +10,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.nongratis.timetracker.data.dao.TaskDao;
 import com.nongratis.timetracker.data.entities.Task;
 
-@Database(entities = {Task.class}, version = 2)
+@Database(entities = {Task.class}, version = 3)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static volatile AppDatabase INSTANCE;
