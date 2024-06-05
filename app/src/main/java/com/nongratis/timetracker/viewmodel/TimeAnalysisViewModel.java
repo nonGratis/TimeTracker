@@ -1,46 +1,40 @@
 package com.nongratis.timetracker.viewmodel;
 
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.Transformations;
 
-import com.github.mikephil.charting.data.PieEntry;
-import com.nongratis.timetracker.data.repository.TimePeriod;
-import com.nongratis.timetracker.data.repository.TimeRepository;
+import com.nongratis.timetracker.data.entities.TimeAnalysisEntity;
+import com.nongratis.timetracker.data.repository.Period;
+import com.nongratis.timetracker.data.repository.TimeAnalysisRepository;
 
 import java.util.List;
 
-public class TimeAnalysisViewModel extends ViewModel {
-    private final MutableLiveData<String> totalTime = new MutableLiveData<>();
-    private final MutableLiveData<List<PieEntry>> workflowData = new MutableLiveData<>();
-    private final MutableLiveData<List<PieEntry>> projectData = new MutableLiveData<>();
-    private final MutableLiveData<List<PieEntry>> projectASpecificData = new MutableLiveData<>();
-    private final MutableLiveData<List<PieEntry>> projectBSpecificData = new MutableLiveData<>();
+public class TimeAnalysisViewModel extends AndroidViewModel {
+    private final TimeAnalysisRepository repository;
+    private final MutableLiveData<Period> selectedPeriod = new MutableLiveData<>(Period.DAY);
+    private LiveData<List<TimeAnalysisEntity>> timeAnalysisData;
 
-    // Getters
-    public LiveData<String> getTotalTime() {
-        return totalTime;
+    public TimeAnalysisViewModel(@NonNull Application application) {
+        super(application);
+        repository = new TimeAnalysisRepository(application);
+
+        timeAnalysisData = Transformations.switchMap(selectedPeriod, period -> {
+            long now = System.currentTimeMillis();
+            long from = now - period.getDuration();
+            return repository.getTimeAnalysis(from, now);
+        });
     }
 
-    public LiveData<List<PieEntry>> getWorkflowData() {
-        return workflowData;
+    public LiveData<List<TimeAnalysisEntity>> getTimeAnalysisData() {
+        return timeAnalysisData;
     }
 
-    public LiveData<List<PieEntry>> getProjectData() {
-        return projectData;
-    }
-
-    public LiveData<List<PieEntry>> getProjectASpecificData() {
-        return projectASpecificData;
-    }
-
-    // Function to update data
-    public void updateData(TimePeriod period) {
-        // Fetch data from repository and update LiveData
-        TimeRepository repository = TimeRepository.getInstance();
-
-        totalTime.setValue(repository.getTotalTime(period.name()));
-        workflowData.setValue(repository.getWorkflowData(period.name()));
-        projectData.setValue(repository.getProjectData(period.name()));
+    public void setPeriod(Period period) {
+        selectedPeriod.setValue(period);
     }
 }
