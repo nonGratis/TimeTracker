@@ -1,4 +1,4 @@
-package com.nongratis.timetracker.viewmodel.ViewModelProvider;
+package com.nongratis.timetracker.viewmodel;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
