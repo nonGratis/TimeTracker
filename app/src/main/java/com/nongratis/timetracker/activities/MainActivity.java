@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
         viewPager2 = findViewById(R.id.viewPager);
         viewPager2.setAdapter(new ViewPagerAdapter(this));
-        viewPager2.setCurrentItem(1); // Set the TimerFragment as the initial fragment
+        viewPager2.setCurrentItem(0);
 
         SyncScheduler.schedulePeriodicSync();
     }

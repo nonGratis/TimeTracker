@@ -1,33 +1,25 @@
+// AppDatabase.java
 package com.nongratis.timetracker.data.database;
 
 import android.content.Context;
+import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.nongratis.timetracker.data.dao.TaskDao;
-import com.nongratis.timetracker.data.dao.TimeAnalysisDao; // Add this import
+import com.nongratis.timetracker.data.dao.TimeAnalysisDao;
 import com.nongratis.timetracker.data.entities.Task;
-import com.nongratis.timetracker.data.entities.TimeAnalysisEntity; // Add this import
+import com.nongratis.timetracker.data.entities.TimeAnalysisEntity;
 
-/**
- * AppDatabase is an abstract class that extends RoomDatabase.
- * It serves as the main database holder and serves as the main access point for the underlying connection to your app's persisted data.
- * The class is annotated with @Database, lists the entities within the database and the version number.
- * It includes an abstract method for each @Dao that is associated with that Database.
- */
-@Database(entities = {Task.class, TimeAnalysisEntity.class}, version = 1) // Add TimeAnalysisEntity
+@Database(entities = {Task.class, TimeAnalysisEntity.class}, version = 2)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static volatile AppDatabase INSTANCE;
 
-    /**
-     * Abstract method with no parameters.
-     * It returns an instance of TaskDao which serves as an access point to the Task table in the database.
-     *
-     * @return an instance of TaskDao.
-     */
     public abstract TaskDao taskDao();
-    public abstract TimeAnalysisDao timeAnalysisDao(); // Add this abstract method
+    public abstract TimeAnalysisDao timeAnalysisDao();
 
     public static AppDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
@@ -35,6 +27,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                                     AppDatabase.class, "app_database")
+                            .addMigrations(MIGRATION_1_2) // Ensure this migration is added
                             .fallbackToDestructiveMigration()
                             .build();
                 }
@@ -42,4 +35,12 @@ public abstract class AppDatabase extends RoomDatabase {
         }
         return INSTANCE;
     }
+
+    static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            // Perform necessary schema changes here
+            database.execSQL("CREATE TABLE IF NOT EXISTS `time_analysis` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `projectName` TEXT, `workflowCategory` TEXT, `duration` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL)");
+        }
+    };
 }

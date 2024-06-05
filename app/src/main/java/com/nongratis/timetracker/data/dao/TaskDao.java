@@ -1,5 +1,6 @@
 package com.nongratis.timetracker.data.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -29,5 +30,5 @@ public interface TaskDao {
      * @return A list of all tasks in the tasks table.
      */
     @Query("SELECT * FROM tasks")
-    List<Task> getAllTasks();
+    LiveData<List<Task>> getAllTasks();
 }

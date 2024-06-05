@@ -1,31 +1,25 @@
 package com.nongratis.timetracker.viewmodel;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.nongratis.timetracker.data.entities.Task;
-import com.nongratis.timetracker.data.repository.ITaskRepository;
+import com.nongratis.timetracker.data.repository.TaskRepository;
+
+import java.util.List;
 
 public class TaskViewModel extends ViewModel {
-    private final ITaskRepository taskRepository;
+    private final TaskRepository taskRepository;
 
-    public TaskViewModel(ITaskRepository taskRepository) {
+    public TaskViewModel(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
     }
 
-    public void saveTask(String workflowName, String projectName, String description, long startTime, long endTime) {
-        Task task = new Task();
-        task.setWorkflowName(workflowName);
-        task.setProjectName(projectName);
-        task.setDescription(description);
-        task.setStartTime(startTime);
-        task.setEndTime(endTime);
-        new Thread(() -> {
-            try {
-                taskRepository.insertTask(task);
-            } catch (Exception e) {
-                // Handle or log the exception
-                e.printStackTrace();
-            }
-        }).start();
+    public LiveData<List<Task>> getAllTasks() {
+        return taskRepository.getAllTasks();
+    }
+
+    public void insertTask(Task task) {
+        taskRepository.insertTask(task);
     }
 }

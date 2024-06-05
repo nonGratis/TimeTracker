@@ -92,7 +92,7 @@ public class TimerFragment extends Fragment {
         notificationHelper = new NotificationHelper(requireContext());
 
         TaskDao taskDao = AppDatabaseInitializer.getDatabase().taskDao();
-        TaskRepository taskRepository = new TaskRepository(taskDao);
+        TaskRepository taskRepository = new TaskRepository(requireActivity().getApplication());
         TaskViewModelFactory factory = new TaskViewModelFactory(taskRepository);
         taskViewModel = new ViewModelProvider(this, factory).get(TaskViewModel.class);
 

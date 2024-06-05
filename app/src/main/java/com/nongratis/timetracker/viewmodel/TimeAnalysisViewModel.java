@@ -1,23 +1,20 @@
 package com.nongratis.timetracker.viewmodel;
 
 import android.app.Application;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
-
 import com.nongratis.timetracker.data.entities.TimeAnalysisEntity;
-import com.nongratis.timetracker.data.repository.Period;
 import com.nongratis.timetracker.data.repository.TimeAnalysisRepository;
-
+import com.nongratis.timetracker.data.repository.Period;
 import java.util.List;
 
 public class TimeAnalysisViewModel extends AndroidViewModel {
     private final TimeAnalysisRepository repository;
     private final MutableLiveData<Period> selectedPeriod = new MutableLiveData<>(Period.DAY);
-    private LiveData<List<TimeAnalysisEntity>> timeAnalysisData;
+    private final LiveData<List<TimeAnalysisEntity>> timeAnalysisData;
 
     public TimeAnalysisViewModel(@NonNull Application application) {
         super(application);
