@@ -1,24 +1,28 @@
 package com.nongratis.timetracker.data.repository;
 
 import android.content.Context;
+
 import androidx.lifecycle.LiveData;
+
 import com.nongratis.timetracker.data.dao.TimeAnalysisDao;
-import com.nongratis.timetracker.data.database.TimeTrackerDatabase;
 import com.nongratis.timetracker.data.entities.TimeAnalysisEntity;
+
 import java.util.List;
+
+import com.nongratis.timetracker.data.database.AppDatabase;
 
 public class TimeRepository {
     private static TimeRepository instance;
     private final TimeAnalysisDao timeAnalysisDao;
 
     private TimeRepository(Context context) {
-        TimeTrackerDatabase database = TimeTrackerDatabase.getInstance(context);
-        timeAnalysisDao = database.timeAnalysisDao();
+        AppDatabase db = AppDatabase.getDatabase(context);
+        timeAnalysisDao = db.timeAnalysisDao();
     }
 
     public static synchronized TimeRepository getInstance(Context context) {
         if (instance == null) {
-            instance = new TimeRepository(context.getApplicationContext());
+            instance = new TimeRepository(context);
         }
         return instance;
     }

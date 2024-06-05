@@ -1,6 +1,7 @@
 package com.nongratis.timetracker.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TimeAnalysisFragment extends Fragment {
+    private static final String TAG = "TimeAnalysisFragment";
     private TimeAnalysisViewModel viewModel;
     private PieChart pieChartWorkflow;
     private PieChart pieChartProject;
@@ -50,6 +52,12 @@ public class TimeAnalysisFragment extends Fragment {
     }
 
     private void updateCharts(List<TimeAnalysisEntity> data) {
+        if (data == null || data.isEmpty()) {
+            Log.w(TAG, "No data available");
+            totalTime.setText("Total Time: 0");
+            return;
+        }
+
         Map<String, Long> workflowCategoryData = new HashMap<>();
         Map<String, Long> projectData = new HashMap<>();
         long totalDuration = 0;
@@ -60,6 +68,7 @@ public class TimeAnalysisFragment extends Fragment {
             projectData.merge(entry.projectName, entry.duration, Long::sum);
         }
 
+        Log.d(TAG, "Total Duration: " + totalDuration);
         totalTime.setText("Total Time: " + totalDuration);
 
         // Update PieChart for Workflow Categories
@@ -78,7 +87,7 @@ public class TimeAnalysisFragment extends Fragment {
             projectEntries.add(new PieEntry(entry.getValue(), entry.getKey()));
         }
         PieDataSet projectDataSet = new PieDataSet(projectEntries, "Projects");
-        PieData projectPieData = new PieData(projectDataSet); // Renamed variable
+        PieData projectPieData = new PieData(projectDataSet);
         pieChartProject.setData(projectPieData);
         pieChartProject.invalidate();
     }

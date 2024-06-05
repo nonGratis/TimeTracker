@@ -10,7 +10,6 @@ import java.util.List;
 
 @Dao
 public interface TimeAnalysisDao {
-    @Query("SELECT * FROM time_analysis WHERE timestamp >= :from AND timestamp <= :to")
+    @Query("SELECT * FROM time_analysis WHERE timestamp BETWEEN :from AND :to")
     LiveData<List<TimeAnalysisEntity>> getTimeAnalysis(long from, long to);
-    // Additional queries for aggregation
 }

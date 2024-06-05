@@ -7,8 +7,8 @@ import androidx.room.PrimaryKey;
 public class TimeAnalysisEntity {
     @PrimaryKey(autoGenerate = true)
     public int id;
-    public String projectName;
-    public String workflowCategory;
-    public long duration;
     public long timestamp;
+    public String workflowCategory;
+    public String projectName;
+    public long duration; // Ensure this is correctly mapped to your database column
 }
