@@ -27,7 +27,7 @@ import com.nongratis.timetracker.managers.TimerManager;
 import com.nongratis.timetracker.managers.UIManager;
 import com.nongratis.timetracker.utils.NotificationHelper;
 import com.nongratis.timetracker.viewmodel.TaskViewModel;
-import com.nongratis.timetracker.viewmodel.ViewModelProvider.TaskViewModelFactory;
+import com.nongratis.timetracker.viewmodel.TaskViewModelFactory;
 
 public class TimerFragment extends Fragment implements UIManager.ButtonClickListener {
 

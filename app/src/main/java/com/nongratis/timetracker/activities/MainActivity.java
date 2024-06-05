@@ -7,7 +7,6 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.nongratis.timetracker.R;
 import com.nongratis.timetracker.adapter.ViewPagerAdapter;
-import com.nongratis.timetracker.utils.SyncScheduler;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,7 +20,5 @@ public class MainActivity extends AppCompatActivity {
         viewPager2 = findViewById(R.id.viewPager);
         viewPager2.setAdapter(new ViewPagerAdapter(this));
         viewPager2.setCurrentItem(0);
-
-        SyncScheduler.schedulePeriodicSync();
     }
 }

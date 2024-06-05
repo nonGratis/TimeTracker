@@ -1,4 +1,4 @@
-package com.nongratis.timetracker.viewmodel.ViewModelProvider;
+package com.nongratis.timetracker.viewmodel;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
