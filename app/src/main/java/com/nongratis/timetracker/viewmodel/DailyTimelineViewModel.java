@@ -25,7 +25,12 @@ public class DailyTimelineViewModel extends ViewModel {
     public LiveData<List<TimeSegment>> getTimeSegmentsForDay(long dayStart, long dayEnd) {
         // Get tasks for the day and convert to time segments
         LiveData<List<Task>> tasksForDay = taskRepository.getTasksBetween(dayStart, dayEnd);
-        timeSegments = Transformations.map(tasksForDay, this::convertTasksToTimeSegments);
+        if (tasksForDay != null) {
+            timeSegments = Transformations.map(tasksForDay, this::convertTasksToTimeSegments);
+        } else {
+            // Handle the case where tasksForDay is null
+            timeSegments = new MutableLiveData<>(new ArrayList<>());
+        }
         return timeSegments;
     }
 
