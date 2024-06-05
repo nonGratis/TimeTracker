@@ -1,39 +1,29 @@
 package com.nongratis.timetracker.data.repository;
 
-import com.github.mikephil.charting.data.PieEntry;
+import android.content.Context;
+import androidx.lifecycle.LiveData;
+import com.nongratis.timetracker.data.dao.TimeAnalysisDao;
+import com.nongratis.timetracker.data.database.TimeTrackerDatabase;
+import com.nongratis.timetracker.data.entities.TimeAnalysisEntity;
 import java.util.List;
 
 public class TimeRepository {
     private static TimeRepository instance;
+    private final TimeAnalysisDao timeAnalysisDao;
 
-    private TimeRepository() {
-        // Private constructor to prevent instantiation
+    private TimeRepository(Context context) {
+        TimeTrackerDatabase database = TimeTrackerDatabase.getInstance(context);
+        timeAnalysisDao = database.timeAnalysisDao();
     }
 
-    public static TimeRepository getInstance() {
+    public static synchronized TimeRepository getInstance(Context context) {
         if (instance == null) {
-            instance = new TimeRepository();
+            instance = new TimeRepository(context.getApplicationContext());
         }
         return instance;
     }
 
-    public String getTotalTime(String period) {
-        // Fetch total time from the database based on the period
-        return "240 hours"; // Placeholder
-    }
-
-    public List<PieEntry> getWorkflowData(String period) {
-        // Fetch workflow data from the database based on the period
-        return null; // Placeholder
-    }
-
-    public List<PieEntry> getProjectData(String period) {
-        // Fetch project data from the database based on the period
-        return null; // Placeholder
-    }
-
-    public List<PieEntry> getProjectSpecificData(String period, String projectName) {
-        // Fetch specific project data from the database based on the period and projectName
-        return null; // Placeholder
+    public LiveData<List<TimeAnalysisEntity>> getTimeAnalysis(long from, long to) {
+        return timeAnalysisDao.getTimeAnalysis(from, to);
     }
 }

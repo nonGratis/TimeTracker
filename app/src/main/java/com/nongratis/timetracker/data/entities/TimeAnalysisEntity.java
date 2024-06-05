@@ -11,5 +11,4 @@ public class TimeAnalysisEntity {
     public String workflowCategory;
     public long duration;
     public long timestamp;
-    // Getters and Setters
 }

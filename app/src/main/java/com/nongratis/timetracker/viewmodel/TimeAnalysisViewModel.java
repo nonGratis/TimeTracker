@@ -7,18 +7,18 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import com.nongratis.timetracker.data.entities.TimeAnalysisEntity;
-import com.nongratis.timetracker.data.repository.TimeAnalysisRepository;
+import com.nongratis.timetracker.data.repository.TimeRepository;
 import com.nongratis.timetracker.data.repository.Period;
 import java.util.List;
 
 public class TimeAnalysisViewModel extends AndroidViewModel {
-    private final TimeAnalysisRepository repository;
+    private final TimeRepository repository;
     private final MutableLiveData<Period> selectedPeriod = new MutableLiveData<>(Period.DAY);
     private final LiveData<List<TimeAnalysisEntity>> timeAnalysisData;
 
     public TimeAnalysisViewModel(@NonNull Application application) {
         super(application);
-        repository = new TimeAnalysisRepository(application);
+        repository = TimeRepository.getInstance(application);
 
         timeAnalysisData = Transformations.switchMap(selectedPeriod, period -> {
             long now = System.currentTimeMillis();
