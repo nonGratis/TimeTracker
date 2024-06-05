@@ -9,17 +9,14 @@ import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.nongratis.timetracker.data.dao.TaskDao;
-import com.nongratis.timetracker.data.dao.TimeAnalysisDao;
 import com.nongratis.timetracker.data.entities.Task;
-import com.nongratis.timetracker.data.entities.TimeAnalysisEntity;
 
-@Database(entities = {Task.class, TimeAnalysisEntity.class}, version = 2)
+@Database(entities = {Task.class}, version = 2)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static volatile AppDatabase INSTANCE;
 
     public abstract TaskDao taskDao();
-    public abstract TimeAnalysisDao timeAnalysisDao();
 
     public static AppDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
