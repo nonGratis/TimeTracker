@@ -39,8 +39,8 @@ public class TimeAnalysisFragment extends Fragment {
         totalTime = view.findViewById(R.id.totalTime);
 
         viewModel = new ViewModelProvider(this).get(TimeAnalysisViewModel.class);
-
         viewModel.getTimeAnalysisData().observe(getViewLifecycleOwner(), this::updateCharts);
+        viewModel.setPeriod(Period.DAY);
 
         view.findViewById(R.id.btnDay).setOnClickListener(v -> viewModel.setPeriod(Period.DAY));
         view.findViewById(R.id.btnWeek).setOnClickListener(v -> viewModel.setPeriod(Period.WEEK));
