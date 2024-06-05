@@ -107,7 +107,9 @@ public class TimeAnalysisFragment extends Fragment {
         legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
         legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
         legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
-        legend.setDrawInside(false);
+        legend.setDrawInside(false);;
+        pieChart.getDescription().setEnabled(false);
+        pieChart.setDrawEntryLabels(false);
     }
 
     private int adjustSaturation(int color, float factor) {
