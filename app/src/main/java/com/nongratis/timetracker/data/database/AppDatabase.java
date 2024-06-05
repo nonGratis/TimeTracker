@@ -1,4 +1,3 @@
-// AppDatabase.java
 package com.nongratis.timetracker.data.database;
 
 import android.content.Context;
@@ -36,8 +35,7 @@ public abstract class AppDatabase extends RoomDatabase {
     static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
-            // Perform necessary schema changes here
-            database.execSQL("CREATE TABLE IF NOT EXISTS `time_analysis` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `projectName` TEXT, `workflowCategory` TEXT, `duration` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL)");
+            database.execSQL("ALTER TABLE tasks ADD COLUMN timestamp INTEGER NOT NULL DEFAULT 0");
         }
     };
 }

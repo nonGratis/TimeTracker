@@ -22,4 +22,8 @@ public class TaskViewModel extends ViewModel {
     public void insertTask(Task task) {
         taskRepository.insertTask(task);
     }
+
+    public LiveData<List<Task>> getTasksByPeriod(String period) {
+        return taskRepository.getTasksByPeriod(period);
+    }
 }

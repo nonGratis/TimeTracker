@@ -31,4 +31,15 @@ public interface TaskDao {
      */
     @Query("SELECT * FROM tasks")
     LiveData<List<Task>> getAllTasks();
+
+    /**
+     * Retrieves all tasks from the tasks table that have a timestamp within the specified period.
+     *
+     * @param startTime The start of the period.
+     * @param endTime The end of the period.
+     * @return A list of all tasks in the tasks table that have a timestamp within the specified period.
+     */
+    @Query("SELECT * FROM tasks WHERE startTime >= :startTime AND endTime <= :endTime")
+    LiveData<List<Task>> getTasksByPeriod(long startTime, long endTime);
+
 }

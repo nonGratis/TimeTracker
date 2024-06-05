@@ -61,4 +61,8 @@ public class Task {
     public void setEndTime(long endTime) {
         this.endTime = endTime;
     }
+
+    public long getDuration() {
+        return endTime - startTime;
+    }
 }
