@@ -1,6 +1,7 @@
 package com.nongratis.timetracker.data.repository;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -19,6 +20,13 @@ public class TimeAnalysisRepository {
     }
 
     public LiveData<List<TimeAnalysisEntity>> getTimeAnalysis(long from, long to) {
-        return timeAnalysisDao.getTimeAnalysis(from, to);
+        LiveData<List<TimeAnalysisEntity>> data = timeAnalysisDao.getTimeAnalysis(from, to);
+        data.observeForever(timeAnalysisEntities -> {
+            Log.d("TimeAnalysisRepository", "Fetched " + timeAnalysisEntities.size() + " entities.");
+            for (TimeAnalysisEntity entity : timeAnalysisEntities) {
+                Log.d("TimeAnalysisRepository", "Entity: " + entity.toString());
+            }
+        });
+        return data;
     }
 }

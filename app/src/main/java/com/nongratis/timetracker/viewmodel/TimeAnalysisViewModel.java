@@ -1,6 +1,8 @@
 package com.nongratis.timetracker.viewmodel;
 
 import android.app.Application;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -14,7 +16,7 @@ import java.util.List;
 public class TimeAnalysisViewModel extends AndroidViewModel {
     private final TimeRepository repository;
     private final MutableLiveData<Period> selectedPeriod = new MutableLiveData<>(Period.DAY);
-    private final LiveData<List<TimeAnalysisEntity>> timeAnalysisData;
+    private LiveData<List<TimeAnalysisEntity>> timeAnalysisData;
 
     public TimeAnalysisViewModel(@NonNull Application application) {
         super(application);
@@ -31,6 +33,15 @@ public class TimeAnalysisViewModel extends AndroidViewModel {
         return timeAnalysisData;
     }
 
+    public void setTimeAnalysisData(long from, long to) {
+        this.timeAnalysisData = repository.getTimeAnalysis(from, to);
+        this.timeAnalysisData.observeForever(timeAnalysisEntities -> {
+            Log.d("TimeAnalysisViewModel", "Fetched " + timeAnalysisEntities.size() + " entities.");
+            for (TimeAnalysisEntity entity : timeAnalysisEntities) {
+                Log.d("TimeAnalysisViewModel", "Entity: " + entity.toString());
+            }
+        });
+    }
     public void setPeriod(Period period) {
         selectedPeriod.setValue(period);
     }
