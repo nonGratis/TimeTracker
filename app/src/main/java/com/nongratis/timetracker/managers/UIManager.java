@@ -5,15 +5,16 @@ import android.widget.TextView;
 
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
+import com.google.android.material.textfield.TextInputEditText;
 import com.nongratis.timetracker.R;
 
 public class UIManager {
     private TextView timerDisplay;
     private ShapeableImageView startStopButton;
     private ShapeableImageView pauseButton;
-    private MaterialAutoCompleteTextView workflowName;
-    private MaterialAutoCompleteTextView projectName;
-    private MaterialAutoCompleteTextView description;
+    private TextInputEditText workflowName;
+    private TextInputEditText projectName;
+    private TextInputEditText description;
     private ButtonClickListener buttonClickListener;
 
     public interface ButtonClickListener {
