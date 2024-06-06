@@ -131,7 +131,7 @@ public class TimeAnalysisFragment extends Fragment {
     private int adjustSaturation(int color, float factor) {
         float[] hsv = new float[3];
         Color.colorToHSV(color, hsv);
-        float minSaturation = 0.10f; // Minimum saturation limit
+        float minSaturation = 0.01f; // Minimum saturation limit
         float maxSaturation = 0.6f; // Maximum saturation limit
         hsv[1] = minSaturation + ((maxSaturation - minSaturation) * factor);
         return Color.HSVToColor(hsv);
