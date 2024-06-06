@@ -107,8 +107,8 @@ public class TimeAnalysisFragment extends Fragment {
 
         // Assign different saturation for different categories
         List<Integer> colors = new ArrayList<>();
-        int baseColor = getResources().getColor(R.color.purple_200);
-        for (int i = 0; i < entries.size(); i++) {
+        int baseColor = getResources().getColor(R.color.purple_100);
+        for (int i = entries.size(); i > 0 ; i--) {
             colors.add(adjustSaturation(baseColor, i / (float) entries.size()));
         }
         dataSet.setColors(colors);
@@ -132,7 +132,8 @@ public class TimeAnalysisFragment extends Fragment {
         float[] hsv = new float[3];
         Color.colorToHSV(color, hsv);
         float minSaturation = 0.10f; // Minimum saturation limit
-        hsv[1] = minSaturation + ((1 - minSaturation) * factor);
+        float maxSaturation = 0.8f; // Maximum saturation limit
+        hsv[1] = minSaturation + ((maxSaturation - minSaturation) * factor);
         return Color.HSVToColor(hsv);
     }
 
