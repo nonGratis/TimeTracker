@@ -17,6 +17,6 @@ public class TaskManager {
         task.setDescription(description);
         task.setStartTime(startTime);
         task.setEndTime(endTime);
-        taskViewModel.saveTask(workflowName, projectName, description, startTime, endTime);
+        taskViewModel.insert(task);
     }
 }

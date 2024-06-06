@@ -1,13 +1,10 @@
 package com.nongratis.timetracker.fragments;
 
-import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,59 +15,47 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.material.imageview.ShapeableImageView;
-import com.google.android.material.textfield.MaterialAutoCompleteTextView;
-import com.nongratis.timetracker.AppDatabaseInitializer;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 import com.nongratis.timetracker.Constants;
 import com.nongratis.timetracker.R;
-import com.nongratis.timetracker.data.dao.TaskDao;
+import com.nongratis.timetracker.data.entities.Task;
 import com.nongratis.timetracker.data.repository.TaskRepository;
-import com.nongratis.timetracker.managers.TaskManager;
-import com.nongratis.timetracker.managers.TimerManager;
+import com.nongratis.timetracker.managers.UIManager;
+import com.nongratis.timetracker.utils.DateTimePickerUtil;
 import com.nongratis.timetracker.utils.NotificationHelper;
 import com.nongratis.timetracker.viewmodel.TaskViewModel;
-import com.nongratis.timetracker.viewmodel.ViewModelProvider.TaskViewModelFactory;
+import com.nongratis.timetracker.viewmodel.TaskViewModelFactory;
+import com.nongratis.timetracker.viewmodel.TimerViewModel;
 
-public class TimerFragment extends Fragment {
+import java.util.Calendar;
+import java.util.Objects;
 
-    private final Handler handler = new Handler(Looper.getMainLooper());
-    private TextView timerDisplay;
-    private ShapeableImageView startStopButton;
-    private ShapeableImageView pauseButton;
-    private MaterialAutoCompleteTextView workflowName;
-    private MaterialAutoCompleteTextView projectName;
-    private MaterialAutoCompleteTextView description;
+public class TimerFragment extends Fragment implements UIManager.ButtonClickListener {
+
+    private TimerViewModel timerViewModel;
+    private TaskViewModel taskViewModel;
+    private UIManager uiManager;
     private NotificationHelper notificationHelper;
-    private TimerManager timerManager;
-    private final Runnable updateTimer = new Runnable() {
-        @SuppressLint("DefaultLocale")
-        @Override
-        public void run() {
-            String elapsedTime = timerManager.getElapsedTime();
-            timerDisplay.setText(elapsedTime);
-            notificationHelper.updateNotification(elapsedTime, false);
-            handler.postDelayed(this, Constants.NOTIFICATION_DELAY);
-        }
-    };
-    private TaskManager taskManager;
+
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (Constants.ACTION_PAUSE_TIMER.equals(intent.getAction())) {
-                pauseTimer();
+                timerViewModel.pauseTimer();
             } else if (Constants.ACTION_STOP_TIMER.equals(intent.getAction())) {
-                stopTimer();
+                timerViewModel.stopTimer();
             } else if (Constants.ACTION_RESUME_TIMER.equals(intent.getAction())) {
-                resumeTimer();
+                timerViewModel.resumeTimer();
             }
         }
     };
-    private TaskViewModel taskViewModel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initManagers();
+        initViewModels();
         setupBroadcastReceiver();
     }
 
@@ -84,20 +69,24 @@ public class TimerFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timer, container, false);
-        setupUI(view);
+        uiManager = new UIManager(view, this);
+
+        view.findViewById(R.id.add_button).setOnClickListener(v -> turnDateTimePicker());
+
+        observeViewModels();
         return view;
     }
 
-    private void initManagers() {
-        notificationHelper = new NotificationHelper(requireContext());
+    private void turnDateTimePicker() {
+        DateTimePickerUtil.showDateTimePicker(getChildFragmentManager(), taskViewModel, getTaskDetails());
+    }
 
-        TaskDao taskDao = AppDatabaseInitializer.getDatabase().taskDao();
-        TaskRepository taskRepository = new TaskRepository(taskDao);
-        TaskViewModelFactory factory = new TaskViewModelFactory(taskRepository);
+    private void initViewModels() {
+        TaskRepository taskRepository = new TaskRepository(requireActivity().getApplication());
+        TaskViewModelFactory factory = new TaskViewModelFactory(requireActivity().getApplication(), taskRepository);
         taskViewModel = new ViewModelProvider(this, factory).get(TaskViewModel.class);
-
-        timerManager = new TimerManager();
-        taskManager = new TaskManager(taskViewModel);
+        timerViewModel = new ViewModelProvider(this).get(TimerViewModel.class);
+        notificationHelper = new NotificationHelper(requireContext());
     }
 
     private void setupBroadcastReceiver() {
@@ -108,75 +97,47 @@ public class TimerFragment extends Fragment {
         requireActivity().registerReceiver(receiver, filter);
     }
 
-    private void setupUI(View view) {
-        timerDisplay = view.findViewById(R.id.timer_display);
-        workflowName = view.findViewById(R.id.workflowName);
-        projectName = view.findViewById(R.id.projectName);
-        description = view.findViewById(R.id.description);
-
-        startStopButton = view.findViewById(R.id.start_stop_button);
-        startStopButton.setOnClickListener(v -> {
-            if (timerManager.isRunning()) {
-                stopTimer();
-            } else {
-                startTimer();
-            }
-        });
-
-        pauseButton = view.findViewById(R.id.pause_button);
-        pauseButton.setOnClickListener(v -> {
-            if (timerManager.isRunning()) {
-                pauseTimer();
-            } else {
-                startTimer();
-            }
+    private void observeViewModels() {
+        timerViewModel.getElapsedTime().observe(getViewLifecycleOwner(), elapsedTime -> {
+            uiManager.updateTimerDisplay(timerViewModel.isRunning(), elapsedTime);
+            notificationHelper.updateNotification(elapsedTime, timerViewModel.isPaused());
         });
     }
 
-    private void startTimer() {
-        timerManager.startTimer();
-        notificationHelper.startNotification(timerManager.getElapsedTime(), false);
-        updateTimerDisplay();
-    }
+    @Override
+    public void onStartStopButtonClick() {
+        String[] taskDetails = getTaskDetails();
 
-    private void stopTimer() {
-        saveCurrentTask();
-        timerManager.stopTimer();
-        updateTimerDisplay();
-        timerDisplay.setText(R.string.start_time);
-    }
-
-    private void pauseTimer() {
-        saveCurrentTask();
-        timerManager.pauseTimer();
-        notificationHelper.updateNotification(timerManager.getElapsedTime(), true);
-        updateTimerDisplay();
-    }
-
-    private void resumeTimer() {
-        startNewTask();
-        timerManager.startTimer();
-        notificationHelper.updateNotification(timerManager.getElapsedTime(), false);
-        updateTimerDisplay();
-    }
-
-    private void startNewTask() {
-        timerManager.startTimer();
-    }
-
-    private void saveCurrentTask() {
-        taskManager.saveTask(workflowName.getText().toString(), projectName.getText().toString(), description.getText().toString(), timerManager.getStartTime(), System.currentTimeMillis());
-    }
-
-    private void updateTimerDisplay() {
-        if (timerManager.isRunning()) {
-            handler.post(updateTimer);
-            startStopButton.setImageResource(R.drawable.ic_stop);
-            pauseButton.setVisibility(View.VISIBLE);
+        if (timerViewModel.isRunning()) {
+            timerViewModel.saveTimer(taskDetails[0], taskDetails[1], taskDetails[2]);
+            timerViewModel.stopTimer();
         } else {
-            handler.removeCallbacks(updateTimer);
-            startStopButton.setImageResource(R.drawable.ic_start);
-            pauseButton.setVisibility(View.GONE);
+            timerViewModel.startTimer();
         }
+    }
+
+    @Override
+    public void onDeleteButtonClick() {
+        if (timerViewModel.isRunning()) {
+            timerViewModel.stopTimer();
+        }
+    }
+    @Override
+    public void onPauseButtonClick() {
+        String[] taskDetails = getTaskDetails();
+
+        if (timerViewModel.isRunning()) {
+            timerViewModel.saveTimer(taskDetails[0], taskDetails[1], taskDetails[2]);
+            timerViewModel.stopTimer();
+        } else {
+            timerViewModel.resumeTimer();
+        }
+    }
+    private String[] getTaskDetails() {
+        String workflowName = ((TextView) requireView().findViewById(R.id.workflowName)).getText().toString();
+        String projectName = ((TextView) requireView().findViewById(R.id.projectName)).getText().toString();
+        String description = ((TextView) requireView().findViewById(R.id.description)).getText().toString();
+
+        return new String[]{workflowName, projectName, description};
     }
 }

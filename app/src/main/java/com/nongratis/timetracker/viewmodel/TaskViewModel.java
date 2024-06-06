@@ -1,31 +1,46 @@
 package com.nongratis.timetracker.viewmodel;
 
-import androidx.lifecycle.ViewModel;
+import android.app.Application;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 
 import com.nongratis.timetracker.data.entities.Task;
-import com.nongratis.timetracker.data.repository.ITaskRepository;
+import com.nongratis.timetracker.data.repository.TaskRepository;
 
-public class TaskViewModel extends ViewModel {
-    private final ITaskRepository taskRepository;
+import java.util.List;
 
-    public TaskViewModel(ITaskRepository taskRepository) {
+/**
+ * ViewModel class for managing Task data.
+ */
+public class TaskViewModel extends AndroidViewModel {
+
+    private final TaskRepository taskRepository;
+    private final LiveData<List<Task>> allTasks;
+
+    public TaskViewModel(@NonNull Application application, TaskRepository taskRepository) {
+        super(application);
         this.taskRepository = taskRepository;
+        this.allTasks = taskRepository.getAllTasks();
     }
 
-    public void saveTask(String workflowName, String projectName, String description, long startTime, long endTime) {
-        Task task = new Task();
-        task.setWorkflowName(workflowName);
-        task.setProjectName(projectName);
-        task.setDescription(description);
-        task.setStartTime(startTime);
-        task.setEndTime(endTime);
-        new Thread(() -> {
-            try {
-                taskRepository.insertTask(task);
-            } catch (Exception e) {
-                // Handle or log the exception
-                e.printStackTrace();
-            }
-        }).start();
+    public LiveData<List<Task>> getAllTasks() {
+        return allTasks;
+    }
+
+    public void insert(Task task) {
+        taskRepository.insert(task);
+    }
+
+    public void update(Task task) {
+        taskRepository.update(task);
+    }
+
+    public void delete(Task task) {
+        taskRepository.delete(task);
+    }
+
+    public LiveData<List<Task>> getTasksByPeriod(String period) {
+        return taskRepository.getTasksByPeriod(period);
     }
 }

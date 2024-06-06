@@ -56,6 +56,7 @@ public class NotificationHelper {
         }
 
         Notification notification = builder.build();
+        notification.flags |= Notification.FLAG_ONLY_ALERT_ONCE;
         notificationManager.notify(NOTIFICATION_ID, notification);
     }
 
