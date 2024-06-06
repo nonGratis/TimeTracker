@@ -12,4 +12,5 @@
     <string name="month">Month</string>
     <string name="week">Week</string>
     <string name="day">Day</string>
+    <string name="scroll_view_description">Scrollable area containing workflow and project data charts</string>
 </resources>
