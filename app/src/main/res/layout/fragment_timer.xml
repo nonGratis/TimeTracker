@@ -14,14 +14,18 @@
         <TextView
             android:id="@+id/timer_text_view"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
             android:text="@string/start_time"
-            android:textSize="48sp"
-            android:layout_gravity="center"/>
+            android:textSize="80sp" />
 
         <LinearLayout
+            android:id="@+id/workflow_info_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:orientation="vertical">
 
             <com.google.android.material.textfield.TextInputLayout
@@ -46,7 +50,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/projectName"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="48dp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -60,13 +64,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
-
-
         </LinearLayout>
 
+
         <LinearLayout
+            android:id="@+id/buttons_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:orientation="horizontal">
 
             <com.google.android.material.imageview.ShapeableImageView
