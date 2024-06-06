@@ -28,12 +28,12 @@ public class MainActivity extends AppCompatActivity {
         new TabLayoutMediator(tabLayout, viewPager2, (tab, position) -> {
             switch (position) {
                 case 0:
-                    tab.setText("Timer");
-                    tab.setIcon(R.drawable.ic_timer); // replace with your timer icon
+                    tab.setText(R.string.FIRST_PAGE_NAME);
+                    tab.setIcon(R.drawable.ic_timer);
                     break;
                 case 1:
-                    tab.setText("Time Analysis");
-                    tab.setIcon(R.drawable.ic_analysis); // replace with your analysis icon
+                    tab.setText(R.string.SECOND_PAGE_NAME);
+                    tab.setIcon(R.drawable.ic_analysis);
                     break;
             }
         }).attach();
