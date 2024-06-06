@@ -1,58 +1,47 @@
 package com.nongratis.timetracker.fragments;
 
-import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.timepicker.MaterialTimePicker;
-import com.google.android.material.timepicker.TimeFormat;
-import com.nongratis.timetracker.AppDatabaseInitializer;
 import com.nongratis.timetracker.Constants;
 import com.nongratis.timetracker.R;
-import com.nongratis.timetracker.data.dao.TaskDao;
-import com.nongratis.timetracker.data.entities.Task;
 import com.nongratis.timetracker.data.repository.TaskRepository;
-import com.nongratis.timetracker.managers.TaskManager;
-import com.nongratis.timetracker.managers.TimerManager;
 import com.nongratis.timetracker.managers.UIManager;
 import com.nongratis.timetracker.utils.NotificationHelper;
 import com.nongratis.timetracker.viewmodel.TaskViewModel;
 import com.nongratis.timetracker.viewmodel.TaskViewModelFactory;
+import com.nongratis.timetracker.viewmodel.TimerViewModel;
 
-import java.util.Calendar;
+import java.util.Objects;
 
 public class TimerFragment extends Fragment implements UIManager.ButtonClickListener {
 
-    private final Handler handler = new Handler(Looper.getMainLooper());
-    private NotificationHelper notificationHelper;
-    private TimerManager timerManager;
-    private TaskManager taskManager;
+    private TimerViewModel timerViewModel;
     private TaskViewModel taskViewModel;
     private UIManager uiManager;
+    private NotificationHelper notificationHelper;
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (Constants.ACTION_PAUSE_TIMER.equals(intent.getAction())) {
-                pauseTimer();
+                timerViewModel.pauseTimer();
             } else if (Constants.ACTION_STOP_TIMER.equals(intent.getAction())) {
-                stopTimer();
+                timerViewModel.stopTimer();
             } else if (Constants.ACTION_RESUME_TIMER.equals(intent.getAction())) {
-                resumeTimer();
+                timerViewModel.resumeTimer();
             }
         }
     };
@@ -60,7 +49,7 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initManagers();
+        initViewModels();
         setupBroadcastReceiver();
     }
 
@@ -75,19 +64,16 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timer, container, false);
         uiManager = new UIManager(view, this);
+        observeViewModels();
         return view;
     }
 
-    private void initManagers() {
-        notificationHelper = new NotificationHelper(requireContext());
-
-        TaskDao taskDao = AppDatabaseInitializer.getDatabase().taskDao();
+    private void initViewModels() {
         TaskRepository taskRepository = new TaskRepository(requireActivity().getApplication());
-        TaskViewModelFactory factory = new TaskViewModelFactory(taskRepository);
+        TaskViewModelFactory factory = new TaskViewModelFactory(requireActivity().getApplication(), taskRepository);
         taskViewModel = new ViewModelProvider(this, factory).get(TaskViewModel.class);
-
-        timerManager = new TimerManager();
-        taskManager = new TaskManager(taskViewModel);
+        timerViewModel = new ViewModelProvider(this).get(TimerViewModel.class);
+        notificationHelper = new NotificationHelper(requireContext());
     }
 
     private void setupBroadcastReceiver() {
@@ -98,69 +84,44 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
         requireActivity().registerReceiver(receiver, filter);
     }
 
+    private void observeViewModels() {
+        timerViewModel.getElapsedTime().observe(getViewLifecycleOwner(), elapsedTime -> {
+            uiManager.updateTimerDisplay(timerViewModel.isRunning(), elapsedTime);
+            notificationHelper.updateNotification(elapsedTime, timerViewModel.isPaused());
+        });
+    }
+
     @Override
     public void onStartStopButtonClick() {
-        if (timerManager.isRunning()) {
-            stopTimer();
+        String workflowName = ((TextView) requireView().findViewById(R.id.workflowName)).getText().toString();
+        String projectName = ((TextView) requireView().findViewById(R.id.projectName)).getText().toString();
+        String description = ((TextView) requireView().findViewById(R.id.description)).getText().toString();
+
+        if (timerViewModel.isRunning()) {
+            timerViewModel.saveTimer(workflowName, projectName, description);
+            timerViewModel.stopTimer();
         } else {
-            startTimer();
+            timerViewModel.startTimer();
         }
     }
 
     @Override
+    public void onDeleteButtonClick() {
+        if (timerViewModel.isRunning()) {
+            timerViewModel.stopTimer();
+        }
+    }
+    @Override
     public void onPauseButtonClick() {
-        if (timerManager.isRunning()) {
-            pauseTimer();
+        String workflowName = ((TextView) requireView().findViewById(R.id.workflowName)).getText().toString();
+        String projectName = ((TextView) requireView().findViewById(R.id.projectName)).getText().toString();
+        String description = ((TextView) requireView().findViewById(R.id.description)).getText().toString();
+
+        if (timerViewModel.isRunning()) {
+            timerViewModel.saveTimer(workflowName, projectName, description);
+            timerViewModel.stopTimer();
         } else {
-            startTimer();
+            timerViewModel.resumeTimer();
         }
     }
-
-    private void startTimer() {
-        timerManager.startTimer();
-        notificationHelper.startNotification(timerManager.getElapsedTime(), timerManager.isPaused());
-        handler.post(updateTimer);
-        uiManager.updateTimerDisplay(timerManager.isRunning(), timerManager.getElapsedTime());
-    }
-
-    private void stopTimer() {
-        saveCurrentTask();
-        timerManager.stopTimer();
-        handler.removeCallbacks(updateTimer);
-        uiManager.updateTimerDisplay(timerManager.isRunning(), timerManager.getElapsedTime());
-    }
-
-    private void pauseTimer() {
-        saveCurrentTask();
-        timerManager.pauseTimer();
-        notificationHelper.updateNotification(timerManager.getElapsedTime(), timerManager.isPaused());
-        uiManager.updateTimerDisplay(timerManager.isRunning(), timerManager.getElapsedTime());
-    }
-
-    private void resumeTimer() {
-        startNewTask();
-        timerManager.startTimer();
-        notificationHelper.updateNotification(timerManager.getElapsedTime(), timerManager.isPaused());
-        handler.post(updateTimer);
-        uiManager.updateTimerDisplay(timerManager.isRunning(), timerManager.getElapsedTime());
-    }
-
-    private void startNewTask() {
-        timerManager.startTimer();
-    }
-
-    private void saveCurrentTask() {
-        taskManager.saveTask(uiManager.getWorkflowName(), uiManager.getProjectName(), uiManager.getDescription(), timerManager.getStartTime(), System.currentTimeMillis());
-    }
-
-    private final Runnable updateTimer = new Runnable() {
-        @SuppressLint("DefaultLocale")
-        @Override
-        public void run() {
-            String elapsedTime = timerManager.getElapsedTime();
-            uiManager.updateTimerDisplay(timerManager.isRunning(), timerManager.getElapsedTime());
-            notificationHelper.updateNotification(elapsedTime, timerManager.isPaused());
-            handler.postDelayed(this, Constants.NOTIFICATION_DELAY);
-        }
-    };
 }

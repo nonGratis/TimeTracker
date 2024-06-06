@@ -4,42 +4,34 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.material.imageview.ShapeableImageView;
-import com.google.android.material.textfield.MaterialAutoCompleteTextView;
-import com.google.android.material.textfield.TextInputEditText;
 import com.nongratis.timetracker.R;
 
 public class UIManager {
-    private TextView timerDisplay;
-    private ShapeableImageView startStopButton;
-    private ShapeableImageView pauseButton;
-    private TextInputEditText workflowName;
-    private TextInputEditText projectName;
-    private TextInputEditText description;
+
+    private final TextView timerTextView;
+    private final ShapeableImageView startStopButton;
+    private final ShapeableImageView pauseButton;
+    private final ShapeableImageView deleteButton;
     private final ButtonClickListener buttonClickListener;
 
-    public interface ButtonClickListener {
-        void onStartStopButtonClick();
-        void onPauseButtonClick();    }
+    public UIManager(View view, ButtonClickListener buttonClickListener) {
+        this.timerTextView = view.findViewById(R.id.timer_text_view);
+        this.startStopButton = view.findViewById(R.id.start_stop_button);
+        this.pauseButton = view.findViewById(R.id.pause_button);
+        this.deleteButton = view.findViewById(R.id.delete_button);
+        this.buttonClickListener = buttonClickListener;
 
-    public UIManager(View view, ButtonClickListener listener) {
-        this.buttonClickListener = listener;
-        setupUI(view);
+        setupListeners();
     }
 
-    private void setupUI(View view) {
-        timerDisplay = view.findViewById(R.id.timer_display);
-        workflowName = view.findViewById(R.id.workflowName);
-        projectName = view.findViewById(R.id.projectName);
-        description = view.findViewById(R.id.description);
-
-        startStopButton = view.findViewById(R.id.start_stop_button);
-        pauseButton = view.findViewById(R.id.pause_button);
-
+    private void setupListeners() {
         startStopButton.setOnClickListener(v -> buttonClickListener.onStartStopButtonClick());
         pauseButton.setOnClickListener(v -> buttonClickListener.onPauseButtonClick());
+        deleteButton.setOnClickListener(v -> buttonClickListener.onDeleteButtonClick());
     }
 
-    public void updateTimerDisplay(boolean isRunning, String currentTime) {
+    public void updateTimerDisplay(boolean isRunning, String elapsedTime) {
+        timerTextView.setText(elapsedTime);
         if (isRunning) {
             startStopButton.setImageResource(R.drawable.ic_stop);
             pauseButton.setVisibility(View.VISIBLE);
@@ -47,18 +39,11 @@ public class UIManager {
             startStopButton.setImageResource(R.drawable.ic_start);
             pauseButton.setVisibility(View.GONE);
         }
-        timerDisplay.setText(currentTime);
     }
 
-    public String getProjectName() {
-        return projectName.getText().toString();
-    }
-
-    public String getWorkflowName() {
-        return workflowName.getText().toString();
-    }
-
-    public String getDescription() {
-        return description.getText().toString();
+    public interface ButtonClickListener {
+        void onStartStopButtonClick();
+        void onPauseButtonClick();
+        void onDeleteButtonClick();
     }
 }

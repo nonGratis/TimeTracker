@@ -17,6 +17,6 @@ public class TaskManager {
         task.setDescription(description);
         task.setStartTime(startTime);
         task.setEndTime(endTime);
-        taskViewModel.insertTask(task);
+        taskViewModel.insert(task);
     }
 }

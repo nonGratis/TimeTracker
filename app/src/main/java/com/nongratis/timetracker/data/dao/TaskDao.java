@@ -2,8 +2,10 @@ package com.nongratis.timetracker.data.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.nongratis.timetracker.data.entities.Task;
 
@@ -25,6 +27,22 @@ public interface TaskDao {
     void insert(Task task);
 
     /**
+     * Inserts a new task into the tasks table.
+     *
+     * @param task The task to be inserted.
+     */
+    @Update
+    void update(Task task);
+
+    /**
+     * Deletes a task from the tasks table.
+     *
+     * @param task The task to be deleted.
+     */
+    @Delete
+    void delete(Task task);
+
+    /**
      * Retrieves all tasks from the tasks table.
      *
      * @return A list of all tasks in the tasks table.
@@ -33,11 +51,11 @@ public interface TaskDao {
     LiveData<List<Task>> getAllTasks();
 
     /**
-     * Retrieves all tasks from the tasks table that have a timestamp within the specified period.
+     * Retrieves tasks from the tasks table within a specified time period.
      *
-     * @param startTime The start of the period.
-     * @param endTime The end of the period.
-     * @return A list of all tasks in the tasks table that have a timestamp within the specified period.
+     * @param startTime The start time of the period.
+     * @param endTime   The end time of the period.
+     * @return A LiveData list of tasks within the specified period.
      */
     @Query("SELECT * FROM tasks WHERE startTime >= :startTime AND endTime <= :endTime")
     LiveData<List<Task>> getTasksByPeriod(long startTime, long endTime);

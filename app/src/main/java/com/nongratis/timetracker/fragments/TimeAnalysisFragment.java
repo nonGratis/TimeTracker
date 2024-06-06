@@ -38,7 +38,6 @@ public class TimeAnalysisFragment extends Fragment {
 
     private ButtonManager buttonManager;
 
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_time_analysis, container, false);
@@ -50,7 +49,7 @@ public class TimeAnalysisFragment extends Fragment {
         btnMonth = view.findViewById(R.id.btnMonth);
 
         TaskRepository taskRepository = new TaskRepository(requireActivity().getApplication());
-        TaskViewModelFactory factory = new TaskViewModelFactory(taskRepository);
+        TaskViewModelFactory factory = new TaskViewModelFactory(requireActivity().getApplication(), taskRepository);
         taskViewModel = new ViewModelProvider(this, factory).get(TaskViewModel.class);
 
         btnDay.setOnClickListener(v -> loadData("day"));
@@ -136,6 +135,7 @@ public class TimeAnalysisFragment extends Fragment {
         hsv[1] = minSaturation + ((1 - minSaturation) * factor);
         return Color.HSVToColor(hsv);
     }
+
     private String formatDuration(long duration) {
         long hours = TimeUnit.MILLISECONDS.toHours(duration);
         long minutes = TimeUnit.MILLISECONDS.toMinutes(duration) % 60;
