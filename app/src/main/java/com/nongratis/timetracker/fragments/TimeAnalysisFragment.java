@@ -1,6 +1,5 @@
 package com.nongratis.timetracker.fragments;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,45 +11,41 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
 import com.google.android.material.button.MaterialButton;
 import com.nongratis.timetracker.R;
 import com.nongratis.timetracker.data.entities.Task;
 import com.nongratis.timetracker.data.repository.TaskRepository;
 import com.nongratis.timetracker.managers.ButtonManager;
+import com.nongratis.timetracker.managers.PieChartManager;
 import com.nongratis.timetracker.viewmodel.TaskViewModel;
 import com.nongratis.timetracker.viewmodel.TaskViewModelFactory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class TimeAnalysisFragment extends Fragment {
-    private PieChart pieChartWorkflow;
-    private PieChart pieChartProject;
     private TaskViewModel taskViewModel;
-    private MaterialButton btnDay, btnWeek, btnMonth;
-
+    private PieChartManager pieChartWorkflowManager;
+    private PieChartManager pieChartProjectManager;
     private ButtonManager buttonManager;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_time_analysis, container, false);
 
-        pieChartWorkflow = view.findViewById(R.id.pieChartWorkflow);
-        pieChartProject = view.findViewById(R.id.pieChartProject);
-        btnDay = view.findViewById(R.id.btnDay);
-        btnWeek = view.findViewById(R.id.btnWeek);
-        btnMonth = view.findViewById(R.id.btnMonth);
+        PieChart pieChartWorkflow = view.findViewById(R.id.pieChartWorkflow);
+        PieChart pieChartProject = view.findViewById(R.id.pieChartProject);
+        MaterialButton btnDay = view.findViewById(R.id.btnDay);
+        MaterialButton btnWeek = view.findViewById(R.id.btnWeek);
+        MaterialButton btnMonth = view.findViewById(R.id.btnMonth);
 
         TaskRepository taskRepository = new TaskRepository(requireActivity().getApplication());
         TaskViewModelFactory factory = new TaskViewModelFactory(requireActivity().getApplication(), taskRepository);
         taskViewModel = new ViewModelProvider(this, factory).get(TaskViewModel.class);
+
+        pieChartWorkflowManager = new PieChartManager(pieChartWorkflow, getContext());
+        pieChartProjectManager = new PieChartManager(pieChartProject, getContext());
 
         btnDay.setOnClickListener(v -> loadData("day"));
         btnWeek.setOnClickListener(v -> loadData("week"));
@@ -84,58 +79,13 @@ public class TimeAnalysisFragment extends Fragment {
                 projectEntriesMap.put(projectLabel, projectAccumulatedDuration + task.getDuration());
                 totalTime += task.getDuration();
             }
-            updatePieChart(pieChartWorkflow, workflowEntriesMap);
-            updatePieChart(pieChartProject, projectEntriesMap);
+            pieChartWorkflowManager.updatePieChart(workflowEntriesMap);
+            pieChartProjectManager.updatePieChart(projectEntriesMap);
 
             // Update total time TextView
             TextView totalTimeTextView = getView().findViewById(R.id.totalTime);
             totalTimeTextView.setText(String.format("Total Time: %s", formatDuration(totalTime)));
         });
-    }
-
-    private void updatePieChart(PieChart pieChart, Map<String, Float> entriesMap) {
-        List<PieEntry> entries = new ArrayList<>();
-        for (Map.Entry<String, Float> entry : entriesMap.entrySet()) {
-            entries.add(new PieEntry(entry.getValue(), entry.getKey()));
-        }
-
-        PieDataSet dataSet = new PieDataSet(entries, "");
-
-        // Assign different saturation for different categories
-        List<Integer> colors = new ArrayList<>();
-        int baseColor = getResources().getColor(R.color.purple_100);
-        for (int i = entries.size(); i > 0 ; i--) {
-            colors.add(adjustSaturation(baseColor, i / (float) entries.size()));
-        }
-        dataSet.setColors(colors);
-
-        PieData data = new PieData(dataSet);
-        pieChart.setData(data);
-        pieChart.invalidate();
-
-        // Disable labels and numerical data
-        pieChart.setDrawEntryLabels(false); // Disable labels
-        data.setValueTextSize(0f); // Disable numerical data
-
-        // Setup legend
-        Legend legend = pieChart.getLegend();
-        legend.setEnabled(true);
-        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
-        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
-        legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
-        legend.setDrawInside(false);
-        pieChart.getDescription().setEnabled(false);
-        pieChart.setDrawEntryLabels(false);
-        pieChart.setHighlightPerTapEnabled(true);
-    }
-
-    private int adjustSaturation(int color, float factor) {
-        float[] hsv = new float[3];
-        Color.colorToHSV(color, hsv);
-        float minSaturation = 0.01f; // Minimum saturation limit
-        float maxSaturation = 0.6f; // Maximum saturation limit
-        hsv[1] = minSaturation + ((maxSaturation - minSaturation) * factor);
-        return Color.HSVToColor(hsv);
     }
 
     private String formatDuration(long duration) {
