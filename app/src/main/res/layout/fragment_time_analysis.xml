@@ -15,33 +15,38 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnDay"
-            style="@style/Widget.Material3.Button.TonalButton"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/day"
             android:textAlignment="center"
-            android:textSize="@dimen/button_text_size" />
+            android:textSize="@dimen/button_text_size"
+            app:strokeColor="@color/purple_200"
+            app:strokeWidth="2dp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnWeek"
-            style="@style/Widget.Material3.Button.TonalButton"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/week"
             android:textAlignment="center"
-            android:textSize="@dimen/button_text_size" />
+            android:textSize="@dimen/button_text_size"
+            app:strokeColor="@color/purple_200"
+            app:strokeWidth="2dp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnMonth"
-            style="@style/Widget.Material3.Button.TonalButton"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/month"
             android:textAlignment="center"
-            android:textSize="@dimen/button_text_size" />
-
+            android:textSize="@dimen/button_text_size"
+            app:strokeColor="@color/purple_200"
+            app:strokeWidth="2dp" />
     </LinearLayout>
 
     <TextView

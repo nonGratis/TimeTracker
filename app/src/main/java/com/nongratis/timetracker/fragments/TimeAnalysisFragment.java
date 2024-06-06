@@ -5,11 +5,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -18,12 +16,13 @@ import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.google.android.material.button.MaterialButton;
 import com.nongratis.timetracker.R;
 import com.nongratis.timetracker.data.entities.Task;
 import com.nongratis.timetracker.data.repository.TaskRepository;
+import com.nongratis.timetracker.managers.ButtonManager;
 import com.nongratis.timetracker.viewmodel.TaskViewModel;
 import com.nongratis.timetracker.viewmodel.TaskViewModelFactory;
-import com.nongratis.timetracker.data.entities.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +34,10 @@ public class TimeAnalysisFragment extends Fragment {
     private PieChart pieChartWorkflow;
     private PieChart pieChartProject;
     private TaskViewModel taskViewModel;
-    private Button btnDat, btnWeek, btnMonth;
+    private MaterialButton btnDay, btnWeek, btnMonth;
+
+    private ButtonManager buttonManager;
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -43,7 +45,7 @@ public class TimeAnalysisFragment extends Fragment {
 
         pieChartWorkflow = view.findViewById(R.id.pieChartWorkflow);
         pieChartProject = view.findViewById(R.id.pieChartProject);
-        btnDat = view.findViewById(R.id.btnDay);
+        btnDay = view.findViewById(R.id.btnDay);
         btnWeek = view.findViewById(R.id.btnWeek);
         btnMonth = view.findViewById(R.id.btnMonth);
 
@@ -51,9 +53,11 @@ public class TimeAnalysisFragment extends Fragment {
         TaskViewModelFactory factory = new TaskViewModelFactory(taskRepository);
         taskViewModel = new ViewModelProvider(this, factory).get(TaskViewModel.class);
 
-        btnDat.setOnClickListener(v -> loadData("day"));
+        btnDay.setOnClickListener(v -> loadData("day"));
         btnWeek.setOnClickListener(v -> loadData("week"));
         btnMonth.setOnClickListener(v -> loadData("month"));
+
+        buttonManager = new ButtonManager(btnDay, btnWeek, btnMonth, R.color.defaultStrokeColor, R.color.selectedStrokeColor);
 
         loadData("day"); // Default load for the day
 
@@ -62,6 +66,7 @@ public class TimeAnalysisFragment extends Fragment {
 
     private void loadData(String period) {
         taskViewModel.getTasksByPeriod(period).observe(getViewLifecycleOwner(), tasks -> {
+            buttonManager.setButtonStyle(period);
             updatePieChart(pieChartWorkflow, tasks, "workflow");
             updatePieChart(pieChartProject, tasks, "project");
 

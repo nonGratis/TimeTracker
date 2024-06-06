@@ -9,4 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="segmentBackground">#D3BCBA</color>
     <color name="Tonals">#FF6200EE</color>
+    <color name="defaultStrokeColor">#808080</color>
+    <color name="selectedStrokeColor">#E91E63</color>
 </resources>
