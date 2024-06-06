@@ -17,10 +17,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 import com.nongratis.timetracker.AppDatabaseInitializer;
 import com.nongratis.timetracker.Constants;
 import com.nongratis.timetracker.R;
 import com.nongratis.timetracker.data.dao.TaskDao;
+import com.nongratis.timetracker.data.entities.Task;
 import com.nongratis.timetracker.data.repository.TaskRepository;
 import com.nongratis.timetracker.managers.TaskManager;
 import com.nongratis.timetracker.managers.TimerManager;
@@ -28,6 +32,8 @@ import com.nongratis.timetracker.managers.UIManager;
 import com.nongratis.timetracker.utils.NotificationHelper;
 import com.nongratis.timetracker.viewmodel.TaskViewModel;
 import com.nongratis.timetracker.viewmodel.TaskViewModelFactory;
+
+import java.util.Calendar;
 
 public class TimerFragment extends Fragment implements UIManager.ButtonClickListener {
 
@@ -78,6 +84,9 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timer, container, false);
         uiManager = new UIManager(view, this);
+
+        view.findViewById(R.id.add_button).setOnClickListener(v -> showDateTimePicker());
+
         return view;
     }
 
@@ -117,6 +126,34 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
         } else {
             startTimer();
         }
+    }
+
+    private void showDateTimePicker() {
+        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker().build();
+        datePicker.addOnPositiveButtonClickListener(selection -> {
+            // When date is selected, show time picker
+            MaterialTimePicker timePicker = new MaterialTimePicker.Builder()
+                    .setTimeFormat(TimeFormat.CLOCK_24H)
+                    .build();
+            timePicker.addOnPositiveButtonClickListener(dialog -> {
+                // When time is selected, create a new task and insert it into the database
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTimeInMillis(datePicker.getSelection());
+                calendar.set(Calendar.HOUR_OF_DAY, timePicker.getHour());
+                calendar.set(Calendar.MINUTE, timePicker.getMinute());
+
+                Task task = new Task();
+                task.setStartTime(calendar.getTimeInMillis());
+                task.setEndTime(calendar.getTimeInMillis()); // Set end time same as start time for now
+                task.setWorkflowName(uiManager.getWorkflowName());
+                task.setProjectName(uiManager.getProjectName());
+                task.setDescription(uiManager.getDescription());
+
+                taskViewModel.insertTask(task);
+            });
+            timePicker.show(getChildFragmentManager(), "TimePicker");
+        });
+        datePicker.show(getChildFragmentManager(), "DatePicker");
     }
     private void startTimer() {
         timerManager.startTimer();
