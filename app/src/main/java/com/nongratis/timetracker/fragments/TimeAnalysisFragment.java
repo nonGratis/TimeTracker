@@ -13,22 +13,18 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.mikephil.charting.charts.PieChart;
 import com.google.android.material.button.MaterialButton;
 import com.nongratis.timetracker.R;
-import com.nongratis.timetracker.data.entities.Task;
 import com.nongratis.timetracker.data.repository.TaskRepository;
-import com.nongratis.timetracker.managers.ButtonManager;
 import com.nongratis.timetracker.managers.PieChartManager;
 import com.nongratis.timetracker.viewmodel.TaskViewModel;
 import com.nongratis.timetracker.viewmodel.TaskViewModelFactory;
+import com.nongratis.timetracker.viewmodel.TimeAnalysisViewModel;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class TimeAnalysisFragment extends Fragment {
-    private TaskViewModel taskViewModel;
+    private TimeAnalysisViewModel timeAnalysisViewModel;
     private PieChartManager pieChartWorkflowManager;
     private PieChartManager pieChartProjectManager;
-    private ButtonManager buttonManager;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -42,47 +38,34 @@ public class TimeAnalysisFragment extends Fragment {
 
         TaskRepository taskRepository = new TaskRepository(requireActivity().getApplication());
         TaskViewModelFactory factory = new TaskViewModelFactory(requireActivity().getApplication(), taskRepository);
-        taskViewModel = new ViewModelProvider(this, factory).get(TaskViewModel.class);
+        TaskViewModel taskViewModel = new ViewModelProvider(this, factory).get(TaskViewModel.class);
+        timeAnalysisViewModel = new TimeAnalysisViewModel(taskViewModel);
 
         pieChartWorkflowManager = new PieChartManager(pieChartWorkflow, getContext());
         pieChartProjectManager = new PieChartManager(pieChartProject, getContext());
 
-        btnDay.setOnClickListener(v -> loadData("day"));
-        btnWeek.setOnClickListener(v -> loadData("week"));
-        btnMonth.setOnClickListener(v -> loadData("month"));
+        btnDay.setOnClickListener(v -> timeAnalysisViewModel.loadData("day"));
+        btnWeek.setOnClickListener(v -> timeAnalysisViewModel.loadData("week"));
+        btnMonth.setOnClickListener(v -> timeAnalysisViewModel.loadData("month"));
 
-        buttonManager = new ButtonManager(btnDay, btnWeek, btnMonth, R.color.defaultStrokeColor, R.color.selectedStrokeColor);
-
-        loadData("day"); // Default load for the day
+        timeAnalysisViewModel.loadData("day"); // Default load for the day
 
         return view;
     }
 
-    private void loadData(String period) {
-        taskViewModel.getTasksByPeriod(period).observe(getViewLifecycleOwner(), tasks -> {
-            buttonManager.setButtonStyle(period);
-            Map<String, Float> workflowEntriesMap = new HashMap<>();
-            Map<String, Float> projectEntriesMap = new HashMap<>();
-            long totalTime = 0;
-            for (Task task : tasks) {
-                String workflowLabel = task.getWorkflowName();
-                String projectLabel = task.getProjectName();
-                if (workflowLabel == null || workflowLabel.isEmpty()) {
-                    workflowLabel = "Other";
-                }
-                if (projectLabel == null || projectLabel.isEmpty()) {
-                    projectLabel = "Other";
-                }
-                float workflowAccumulatedDuration = workflowEntriesMap.getOrDefault(workflowLabel, 0f);
-                float projectAccumulatedDuration = projectEntriesMap.getOrDefault(projectLabel, 0f);
-                workflowEntriesMap.put(workflowLabel, workflowAccumulatedDuration + task.getDuration());
-                projectEntriesMap.put(projectLabel, projectAccumulatedDuration + task.getDuration());
-                totalTime += task.getDuration();
-            }
-            pieChartWorkflowManager.updatePieChart(workflowEntriesMap);
-            pieChartProjectManager.updatePieChart(projectEntriesMap);
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-            // Update total time TextView
+        timeAnalysisViewModel.getWorkflowEntriesLiveData().observe(getViewLifecycleOwner(), workflowEntriesMap -> {
+            pieChartWorkflowManager.updatePieChart(workflowEntriesMap);
+        });
+
+        timeAnalysisViewModel.getProjectEntriesLiveData().observe(getViewLifecycleOwner(), projectEntriesMap -> {
+            pieChartProjectManager.updatePieChart(projectEntriesMap);
+        });
+
+        timeAnalysisViewModel.getTotalTimeLiveData().observe(getViewLifecycleOwner(), totalTime -> {
             TextView totalTimeTextView = getView().findViewById(R.id.totalTime);
             totalTimeTextView.setText(String.format("Total Time: %s", formatDuration(totalTime)));
         });
