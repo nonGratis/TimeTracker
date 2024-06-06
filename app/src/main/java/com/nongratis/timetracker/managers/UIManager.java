@@ -15,7 +15,7 @@ public class UIManager {
     private TextInputEditText workflowName;
     private TextInputEditText projectName;
     private TextInputEditText description;
-    private ButtonClickListener buttonClickListener;
+    private final ButtonClickListener buttonClickListener;
 
     public interface ButtonClickListener {
         void onStartStopButtonClick();

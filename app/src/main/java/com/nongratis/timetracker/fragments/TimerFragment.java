@@ -40,17 +40,10 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
     private final Handler handler = new Handler(Looper.getMainLooper());
     private NotificationHelper notificationHelper;
     private TimerManager timerManager;
-    private final Runnable updateTimer = new Runnable() {
-        @SuppressLint("DefaultLocale")
-        @Override
-        public void run() {
-            String elapsedTime = timerManager.getElapsedTime();
-            uiManager.updateTimerDisplay(timerManager.isRunning(), timerManager.getElapsedTime());
-            notificationHelper.updateNotification(elapsedTime, timerManager.isPaused());
-            handler.postDelayed(this, Constants.NOTIFICATION_DELAY);
-        }
-    };
     private TaskManager taskManager;
+    private TaskViewModel taskViewModel;
+    private UIManager uiManager;
+
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -63,8 +56,6 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
             }
         }
     };
-    private TaskViewModel taskViewModel;
-    private UIManager uiManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -84,9 +75,6 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timer, container, false);
         uiManager = new UIManager(view, this);
-
-        view.findViewById(R.id.add_button).setOnClickListener(v -> showDateTimePicker());
-
         return view;
     }
 
@@ -128,46 +116,6 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
         }
     }
 
-    private void showDateTimePicker() {
-        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker().build();
-        datePicker.addOnPositiveButtonClickListener(selection -> {
-            // When date is selected, show time picker for start time
-            MaterialTimePicker startTimePicker = new MaterialTimePicker.Builder()
-                    .setTimeFormat(TimeFormat.CLOCK_24H)
-                    .build();
-            startTimePicker.addOnPositiveButtonClickListener(dialog -> {
-                // When start time is selected, show time picker for end time
-                MaterialTimePicker endTimePicker = new MaterialTimePicker.Builder()
-                        .setTimeFormat(TimeFormat.CLOCK_24H)
-                        .build();
-                endTimePicker.addOnPositiveButtonClickListener(dialogEnd -> {
-                    // When end time is selected, create a new task and insert it into the database
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTimeInMillis(datePicker.getSelection());
-                    calendar.set(Calendar.HOUR_OF_DAY, startTimePicker.getHour());
-                    calendar.set(Calendar.MINUTE, startTimePicker.getMinute());
-
-                    Task task = new Task();
-                    task.setStartTime(calendar.getTimeInMillis());
-
-                    // Set end time
-                    calendar.set(Calendar.HOUR_OF_DAY, endTimePicker.getHour());
-                    calendar.set(Calendar.MINUTE, endTimePicker.getMinute());
-                    task.setEndTime(calendar.getTimeInMillis());
-
-                    task.setWorkflowName(uiManager.getWorkflowName());
-                    task.setProjectName(uiManager.getProjectName());
-                    task.setDescription(uiManager.getDescription());
-
-                    taskViewModel.insertTask(task);
-                });
-                endTimePicker.show(getChildFragmentManager(), "EndTimePicker");
-            });
-            startTimePicker.show(getChildFragmentManager(), "StartTimePicker");
-        });
-        datePicker.show(getChildFragmentManager(), "DatePicker");
-    }
-
     private void startTimer() {
         timerManager.startTimer();
         notificationHelper.startNotification(timerManager.getElapsedTime(), timerManager.isPaused());
@@ -196,6 +144,7 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
         handler.post(updateTimer);
         uiManager.updateTimerDisplay(timerManager.isRunning(), timerManager.getElapsedTime());
     }
+
     private void startNewTask() {
         timerManager.startTimer();
     }
@@ -203,4 +152,15 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
     private void saveCurrentTask() {
         taskManager.saveTask(uiManager.getWorkflowName(), uiManager.getProjectName(), uiManager.getDescription(), timerManager.getStartTime(), System.currentTimeMillis());
     }
+
+    private final Runnable updateTimer = new Runnable() {
+        @SuppressLint("DefaultLocale")
+        @Override
+        public void run() {
+            String elapsedTime = timerManager.getElapsedTime();
+            uiManager.updateTimerDisplay(timerManager.isRunning(), timerManager.getElapsedTime());
+            notificationHelper.updateNotification(elapsedTime, timerManager.isPaused());
+            handler.postDelayed(this, Constants.NOTIFICATION_DELAY);
+        }
+    };
 }
