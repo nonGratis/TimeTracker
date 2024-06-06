@@ -11,5 +11,5 @@
     <color name="segmentBackground">#D3BCBA</color>
     <color name="Tonals">#FF6200EE</color>
     <color name="defaultStrokeColor">#808080</color>
-    <color name="selectedStrokeColor">#E91E63</color>
+    <color name="selectedStrokeColor">#2D006D</color>
 </resources>

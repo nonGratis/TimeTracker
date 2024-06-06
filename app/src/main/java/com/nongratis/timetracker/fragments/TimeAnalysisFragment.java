@@ -14,6 +14,7 @@ import com.github.mikephil.charting.charts.PieChart;
 import com.google.android.material.button.MaterialButton;
 import com.nongratis.timetracker.R;
 import com.nongratis.timetracker.data.repository.TaskRepository;
+import com.nongratis.timetracker.managers.ButtonManager;
 import com.nongratis.timetracker.managers.PieChartManager;
 import com.nongratis.timetracker.viewmodel.TaskViewModel;
 import com.nongratis.timetracker.viewmodel.TaskViewModelFactory;
@@ -32,21 +33,35 @@ public class TimeAnalysisFragment extends Fragment {
 
         PieChart pieChartWorkflow = view.findViewById(R.id.pieChartWorkflow);
         PieChart pieChartProject = view.findViewById(R.id.pieChartProject);
-        MaterialButton btnDay = view.findViewById(R.id.btnDay);
-        MaterialButton btnWeek = view.findViewById(R.id.btnWeek);
-        MaterialButton btnMonth = view.findViewById(R.id.btnMonth);
+
+        pieChartWorkflowManager = new PieChartManager(pieChartWorkflow, getContext());
+        pieChartProjectManager = new PieChartManager(pieChartProject, getContext());
+
 
         TaskRepository taskRepository = new TaskRepository(requireActivity().getApplication());
         TaskViewModelFactory factory = new TaskViewModelFactory(requireActivity().getApplication(), taskRepository);
         TaskViewModel taskViewModel = new ViewModelProvider(this, factory).get(TaskViewModel.class);
         timeAnalysisViewModel = new TimeAnalysisViewModel(taskViewModel);
 
-        pieChartWorkflowManager = new PieChartManager(pieChartWorkflow, getContext());
-        pieChartProjectManager = new PieChartManager(pieChartProject, getContext());
 
-        btnDay.setOnClickListener(v -> timeAnalysisViewModel.loadData("day"));
-        btnWeek.setOnClickListener(v -> timeAnalysisViewModel.loadData("week"));
-        btnMonth.setOnClickListener(v -> timeAnalysisViewModel.loadData("month"));
+        MaterialButton btnDay = view.findViewById(R.id.btnDay);
+        MaterialButton btnWeek = view.findViewById(R.id.btnWeek);
+        MaterialButton btnMonth = view.findViewById(R.id.btnMonth);
+
+        ButtonManager buttonManager = new ButtonManager(btnDay, btnWeek, btnMonth, R.color.defaultStrokeColor, R.color.selectedStrokeColor);
+
+        btnDay.setOnClickListener(v -> {
+            timeAnalysisViewModel.loadData("day");
+            buttonManager.setButtonStyle("day");
+        });
+        btnWeek.setOnClickListener(v -> {
+            timeAnalysisViewModel.loadData("week");
+            buttonManager.setButtonStyle("week");
+        });
+        btnMonth.setOnClickListener(v -> {
+            timeAnalysisViewModel.loadData("month");
+            buttonManager.setButtonStyle("month");
+        });
 
         timeAnalysisViewModel.loadData("day"); // Default load for the day
 
@@ -57,16 +72,13 @@ public class TimeAnalysisFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        timeAnalysisViewModel.getWorkflowEntriesLiveData().observe(getViewLifecycleOwner(), workflowEntriesMap -> {
-            pieChartWorkflowManager.updatePieChart(workflowEntriesMap);
-        });
+        timeAnalysisViewModel.getWorkflowEntriesLiveData().observe(getViewLifecycleOwner(), workflowEntriesMap -> pieChartWorkflowManager.updatePieChart(workflowEntriesMap));
 
-        timeAnalysisViewModel.getProjectEntriesLiveData().observe(getViewLifecycleOwner(), projectEntriesMap -> {
-            pieChartProjectManager.updatePieChart(projectEntriesMap);
-        });
+        timeAnalysisViewModel.getProjectEntriesLiveData().observe(getViewLifecycleOwner(), pieChartProjectManager::updatePieChart);
 
         timeAnalysisViewModel.getTotalTimeLiveData().observe(getViewLifecycleOwner(), totalTime -> {
-            TextView totalTimeTextView = getView().findViewById(R.id.totalTime);
+            TextView totalTimeTextView;
+            totalTimeTextView = getView().findViewById(R.id.totalTime);
             totalTimeTextView.setText(String.format("Total Time: %s", formatDuration(totalTime)));
         });
     }
