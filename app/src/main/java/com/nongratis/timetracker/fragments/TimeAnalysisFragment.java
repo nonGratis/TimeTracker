@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class TimeAnalysisFragment extends Fragment {
     private PieChart pieChartWorkflow;
@@ -62,6 +64,16 @@ public class TimeAnalysisFragment extends Fragment {
         taskViewModel.getTasksByPeriod(period).observe(getViewLifecycleOwner(), tasks -> {
             updatePieChart(pieChartWorkflow, tasks, "workflow");
             updatePieChart(pieChartProject, tasks, "project");
+
+            // Calculate total time
+            long totalTime = 0;
+            for (Task task : tasks) {
+                totalTime += task.getDuration();
+            }
+
+            // Update total time TextView
+            TextView totalTimeTextView = getView().findViewById(R.id.totalTime);
+            totalTimeTextView.setText(String.format("Total Time: %s", formatDuration(totalTime)));
         });
     }
 
@@ -118,5 +130,11 @@ public class TimeAnalysisFragment extends Fragment {
         float minSaturation = 0.10f; // Minimum saturation limit
         hsv[1] = minSaturation + ((1 - minSaturation) * factor);
         return Color.HSVToColor(hsv);
+    }
+    private String formatDuration(long duration) {
+        long hours = TimeUnit.MILLISECONDS.toHours(duration);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(duration) % 60;
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(duration) % 60;
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 }
