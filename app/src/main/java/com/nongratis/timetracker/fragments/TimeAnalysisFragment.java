@@ -99,7 +99,7 @@ public class TimeAnalysisFragment extends Fragment {
             entries.add(new PieEntry(entry.getValue(), entry.getKey()));
         }
 
-        PieDataSet dataSet = new PieDataSet(entries, "Time Analysis");
+        PieDataSet dataSet = new PieDataSet(entries, "");
 
         // Assign different saturation for different categories
         List<Integer> colors = new ArrayList<>();
