@@ -83,7 +83,6 @@ public class TimeAnalysisFragment extends Fragment {
 
     private void updatePieChart(PieChart pieChart, List<Task> tasks, String type) {
         Map<String, Float> entriesMap = new HashMap<>();
-        // Process tasks to create PieEntries based on type (workflow/project)
         for (Task task : tasks) {
             String label;
             if (type.equals("workflow")) {
@@ -94,7 +93,7 @@ public class TimeAnalysisFragment extends Fragment {
             if (label == null || label.isEmpty()) {
                 label = "Other";
             }
-            float previousDuration = entriesMap.containsKey(label) ? entriesMap.get(label) : 0;
+            float previousDuration = entriesMap.getOrDefault(label, 0f);
             entriesMap.put(label, previousDuration + task.getDuration());
         }
 
