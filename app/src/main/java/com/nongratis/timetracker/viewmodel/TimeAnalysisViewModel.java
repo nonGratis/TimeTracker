@@ -8,6 +8,7 @@ import com.nongratis.timetracker.data.entities.Task;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class TimeAnalysisViewModel extends ViewModel {
     private final TaskViewModel taskViewModel;
@@ -55,5 +56,12 @@ public class TimeAnalysisViewModel extends ViewModel {
             projectEntriesLiveData.setValue(projectEntriesMap);
             totalTimeLiveData.setValue(totalTime);
         });
+    }
+
+    public String formatDuration(long duration) {
+        long hours = TimeUnit.MILLISECONDS.toHours(duration);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(duration) % 60;
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(duration) % 60;
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 }
