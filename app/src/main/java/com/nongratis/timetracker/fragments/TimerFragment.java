@@ -131,30 +131,43 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
     private void showDateTimePicker() {
         MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker().build();
         datePicker.addOnPositiveButtonClickListener(selection -> {
-            // When date is selected, show time picker
-            MaterialTimePicker timePicker = new MaterialTimePicker.Builder()
+            // When date is selected, show time picker for start time
+            MaterialTimePicker startTimePicker = new MaterialTimePicker.Builder()
                     .setTimeFormat(TimeFormat.CLOCK_24H)
                     .build();
-            timePicker.addOnPositiveButtonClickListener(dialog -> {
-                // When time is selected, create a new task and insert it into the database
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(datePicker.getSelection());
-                calendar.set(Calendar.HOUR_OF_DAY, timePicker.getHour());
-                calendar.set(Calendar.MINUTE, timePicker.getMinute());
+            startTimePicker.addOnPositiveButtonClickListener(dialog -> {
+                // When start time is selected, show time picker for end time
+                MaterialTimePicker endTimePicker = new MaterialTimePicker.Builder()
+                        .setTimeFormat(TimeFormat.CLOCK_24H)
+                        .build();
+                endTimePicker.addOnPositiveButtonClickListener(dialogEnd -> {
+                    // When end time is selected, create a new task and insert it into the database
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTimeInMillis(datePicker.getSelection());
+                    calendar.set(Calendar.HOUR_OF_DAY, startTimePicker.getHour());
+                    calendar.set(Calendar.MINUTE, startTimePicker.getMinute());
 
-                Task task = new Task();
-                task.setStartTime(calendar.getTimeInMillis());
-                task.setEndTime(calendar.getTimeInMillis()); // Set end time same as start time for now
-                task.setWorkflowName(uiManager.getWorkflowName());
-                task.setProjectName(uiManager.getProjectName());
-                task.setDescription(uiManager.getDescription());
+                    Task task = new Task();
+                    task.setStartTime(calendar.getTimeInMillis());
 
-                taskViewModel.insertTask(task);
+                    // Set end time
+                    calendar.set(Calendar.HOUR_OF_DAY, endTimePicker.getHour());
+                    calendar.set(Calendar.MINUTE, endTimePicker.getMinute());
+                    task.setEndTime(calendar.getTimeInMillis());
+
+                    task.setWorkflowName(uiManager.getWorkflowName());
+                    task.setProjectName(uiManager.getProjectName());
+                    task.setDescription(uiManager.getDescription());
+
+                    taskViewModel.insertTask(task);
+                });
+                endTimePicker.show(getChildFragmentManager(), "EndTimePicker");
             });
-            timePicker.show(getChildFragmentManager(), "TimePicker");
+            startTimePicker.show(getChildFragmentManager(), "StartTimePicker");
         });
         datePicker.show(getChildFragmentManager(), "DatePicker");
     }
+
     private void startTimer() {
         timerManager.startTimer();
         notificationHelper.startNotification(timerManager.getElapsedTime(), timerManager.isPaused());
