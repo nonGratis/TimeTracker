@@ -115,7 +115,11 @@ public class TimeAnalysisFragment extends Fragment {
 
         PieData data = new PieData(dataSet);
         pieChart.setData(data);
-        pieChart.invalidate(); // Refresh the chart
+        pieChart.invalidate();
+
+        // Disable labels and numerical data
+        pieChart.setDrawEntryLabels(false); // Disable labels
+        data.setValueTextSize(0f); // Disable numerical data
 
         // Setup legend
         Legend legend = pieChart.getLegend();
@@ -126,6 +130,7 @@ public class TimeAnalysisFragment extends Fragment {
         legend.setDrawInside(false);
         pieChart.getDescription().setEnabled(false);
         pieChart.setDrawEntryLabels(false);
+        pieChart.setHighlightPerTapEnabled(true);
     }
 
     private int adjustSaturation(int color, float factor) {
