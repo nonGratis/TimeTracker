@@ -66,14 +66,26 @@ public class TimeAnalysisFragment extends Fragment {
     private void loadData(String period) {
         taskViewModel.getTasksByPeriod(period).observe(getViewLifecycleOwner(), tasks -> {
             buttonManager.setButtonStyle(period);
-            updatePieChart(pieChartWorkflow, tasks, "workflow");
-            updatePieChart(pieChartProject, tasks, "project");
-
-            // Calculate total time
+            Map<String, Float> workflowEntriesMap = new HashMap<>();
+            Map<String, Float> projectEntriesMap = new HashMap<>();
             long totalTime = 0;
             for (Task task : tasks) {
+                String workflowLabel = task.getWorkflowName();
+                String projectLabel = task.getProjectName();
+                if (workflowLabel == null || workflowLabel.isEmpty()) {
+                    workflowLabel = "Other";
+                }
+                if (projectLabel == null || projectLabel.isEmpty()) {
+                    projectLabel = "Other";
+                }
+                float workflowAccumulatedDuration = workflowEntriesMap.getOrDefault(workflowLabel, 0f);
+                float projectAccumulatedDuration = projectEntriesMap.getOrDefault(projectLabel, 0f);
+                workflowEntriesMap.put(workflowLabel, workflowAccumulatedDuration + task.getDuration());
+                projectEntriesMap.put(projectLabel, projectAccumulatedDuration + task.getDuration());
                 totalTime += task.getDuration();
             }
+            updatePieChart(pieChartWorkflow, workflowEntriesMap);
+            updatePieChart(pieChartProject, projectEntriesMap);
 
             // Update total time TextView
             TextView totalTimeTextView = getView().findViewById(R.id.totalTime);
@@ -81,22 +93,7 @@ public class TimeAnalysisFragment extends Fragment {
         });
     }
 
-    private void updatePieChart(PieChart pieChart, List<Task> tasks, String type) {
-        Map<String, Float> entriesMap = new HashMap<>();
-        for (Task task : tasks) {
-            String label;
-            if (type.equals("workflow")) {
-                label = task.getWorkflowName();
-            } else {
-                label = task.getProjectName();
-            }
-            if (label == null || label.isEmpty()) {
-                label = "Other";
-            }
-            float previousDuration = entriesMap.getOrDefault(label, 0f);
-            entriesMap.put(label, previousDuration + task.getDuration());
-        }
-
+    private void updatePieChart(PieChart pieChart, Map<String, Float> entriesMap) {
         List<PieEntry> entries = new ArrayList<>();
         for (Map.Entry<String, Float> entry : entriesMap.entrySet()) {
             entries.add(new PieEntry(entry.getValue(), entry.getKey()));
