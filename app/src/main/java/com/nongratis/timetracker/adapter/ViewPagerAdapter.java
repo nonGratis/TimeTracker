@@ -4,9 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-import com.nongratis.timetracker.fragments.TimerFragment;
-import com.nongratis.timetracker.fragments.DailyTimelineFragment;
+
 import com.nongratis.timetracker.fragments.TimeAnalysisFragment;
+import com.nongratis.timetracker.fragments.TimerFragment;
 
 public class ViewPagerAdapter extends FragmentStateAdapter {
 
@@ -19,10 +19,8 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             case 0:
-                return new DailyTimelineFragment();
-            case 1:
                 return new TimerFragment();
-            case 2:
+            case 1:
                 return new TimeAnalysisFragment();
             default:
                 return new TimerFragment();
@@ -31,6 +29,6 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return 3;
+        return 2;
     }
 }

@@ -5,6 +5,7 @@ public class TimerLogic {
     private long startTime = 0L;
     private long pauseTime = 0L;
     private boolean isRunning = false;
+    private boolean isPaused = false;
 
     public void startTimer() {
         isRunning = true;
@@ -17,12 +18,14 @@ public class TimerLogic {
 
     public void stopTimer() {
         isRunning = false;
+        isPaused = false;
         pauseTime = 0L;
         startTime = 0L;
     }
 
     public void pauseTimer() {
         isRunning = false;
+        isPaused = true;
         pauseTime = System.currentTimeMillis() - startTime;
     }
 
@@ -43,7 +46,15 @@ public class TimerLogic {
         }
     }
 
+    public long getStartTime() {
+        return startTime;
+    }
+
     public boolean isRunning() {
         return isRunning;
+    }
+
+    public boolean isPaused() {
+        return !isRunning && pauseTime > 0L;
     }
 }

@@ -4,4 +4,16 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
+
+    <style name="Material3.Button.TonalButton" parent="Widget.Material3.Button.TonalButton">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.MyApp.Circle</item>
+        <item name="backgroundTint">@color/Tonals</item>
+    </style>
+
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light">
+        <!-- Other style items -->
+        <item name="materialCalendarStyle">@style/Widget.MaterialComponents.MaterialCalendar</item>
+        <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.MaterialComponents.MaterialCalendar.Fullscreen</item>
+        <item name="materialCalendarTheme">@style/ThemeOverlay.MaterialComponents.MaterialCalendar</item>
+    </style>
 </resources>
