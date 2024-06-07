@@ -1,6 +1,7 @@
 package com.nongratis.timetracker.data.repository;
 
 import android.app.Application;
+
 import androidx.lifecycle.LiveData;
 
 import com.nongratis.timetracker.data.dao.TaskDao;

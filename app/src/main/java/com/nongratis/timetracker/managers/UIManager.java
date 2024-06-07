@@ -43,7 +43,9 @@ public class UIManager {
 
     public interface ButtonClickListener {
         void onStartStopButtonClick();
+
         void onPauseButtonClick();
+
         void onDeleteButtonClick();
     }
 }

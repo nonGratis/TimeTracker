@@ -1,6 +1,7 @@
 package com.nongratis.timetracker.viewmodel;
 
 import android.app.Application;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;

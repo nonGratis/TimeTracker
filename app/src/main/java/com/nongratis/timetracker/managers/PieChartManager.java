@@ -34,7 +34,7 @@ public class PieChartManager {
         // Assign different saturation for different categories
         List<Integer> colors = new ArrayList<>();
         int baseColor = context.getResources().getColor(R.color.purple_100, null);
-        for (int i = entries.size(); i > 0 ; i--) {
+        for (int i = entries.size(); i > 0; i--) {
             colors.add(adjustSaturation(baseColor, i / (float) entries.size()));
         }
         dataSet.setColors(colors);

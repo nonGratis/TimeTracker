@@ -20,8 +20,6 @@ import com.nongratis.timetracker.viewmodel.TaskViewModel;
 import com.nongratis.timetracker.viewmodel.TaskViewModelFactory;
 import com.nongratis.timetracker.viewmodel.TimeAnalysisViewModel;
 
-import java.util.concurrent.TimeUnit;
-
 public class TimeAnalysisFragment extends Fragment {
     private TimeAnalysisViewModel timeAnalysisViewModel;
     private PieChartManager pieChartWorkflowManager;

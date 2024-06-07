@@ -15,12 +15,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.timepicker.MaterialTimePicker;
-import com.google.android.material.timepicker.TimeFormat;
 import com.nongratis.timetracker.Constants;
 import com.nongratis.timetracker.R;
-import com.nongratis.timetracker.data.entities.Task;
 import com.nongratis.timetracker.data.repository.TaskRepository;
 import com.nongratis.timetracker.managers.UIManager;
 import com.nongratis.timetracker.utils.DateTimePickerUtil;
@@ -29,16 +25,9 @@ import com.nongratis.timetracker.viewmodel.TaskViewModel;
 import com.nongratis.timetracker.viewmodel.TaskViewModelFactory;
 import com.nongratis.timetracker.viewmodel.TimerViewModel;
 
-import java.util.Calendar;
-import java.util.Objects;
-
 public class TimerFragment extends Fragment implements UIManager.ButtonClickListener {
 
     private TimerViewModel timerViewModel;
-    private TaskViewModel taskViewModel;
-    private UIManager uiManager;
-    private NotificationHelper notificationHelper;
-
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -51,6 +40,9 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
             }
         }
     };
+    private TaskViewModel taskViewModel;
+    private UIManager uiManager;
+    private NotificationHelper notificationHelper;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -122,6 +114,7 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
             timerViewModel.stopTimer();
         }
     }
+
     @Override
     public void onPauseButtonClick() {
         String[] taskDetails = getTaskDetails();
@@ -133,6 +126,7 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
             timerViewModel.resumeTimer();
         }
     }
+
     private String[] getTaskDetails() {
         String workflowName = ((TextView) requireView().findViewById(R.id.workflowName)).getText().toString();
         String projectName = ((TextView) requireView().findViewById(R.id.projectName)).getText().toString();

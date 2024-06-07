@@ -1,9 +1,6 @@
 package com.nongratis.timetracker.managers;
 
-import android.widget.Button;
-
 import com.google.android.material.button.MaterialButton;
-import com.nongratis.timetracker.R;
 
 public class ButtonManager {
     private final MaterialButton btnDay, btnWeek, btnMonth;

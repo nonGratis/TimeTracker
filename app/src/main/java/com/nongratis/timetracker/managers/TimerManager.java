@@ -6,10 +6,6 @@ public class TimerManager {
     private final TimerLogic timerLogic = new TimerLogic();
     private TimerUpdateListener timerUpdateListener;
 
-    public interface TimerUpdateListener {
-        void onTimerUpdate(String elapsedTime);
-    }
-
     public void setTimerUpdateListener(TimerUpdateListener listener) {
         this.timerUpdateListener = listener;
     }
@@ -43,5 +39,9 @@ public class TimerManager {
 
     public boolean isPaused() {
         return timerLogic.isPaused();
+    }
+
+    public interface TimerUpdateListener {
+        void onTimerUpdate(String elapsedTime);
     }
 }

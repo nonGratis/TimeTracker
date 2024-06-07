@@ -9,9 +9,9 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.nongratis.timetracker.data.repository.TaskRepository;
 import com.nongratis.timetracker.managers.TaskManager;
 import com.nongratis.timetracker.managers.TimerManager;
-import com.nongratis.timetracker.data.repository.TaskRepository;
 
 public class TimerViewModel extends AndroidViewModel {
 

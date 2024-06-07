@@ -6,6 +6,7 @@ import androidx.room.Room;
 
 import com.nongratis.timetracker.data.database.AppDatabase;
 import com.nongratis.timetracker.data.executor.DatabaseExecutor;
+
 /**
  * AppDatabaseInitializer is a class that extends the Application class.
  * It initializes the AppDatabase and provides a global point of access to it.
