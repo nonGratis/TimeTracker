@@ -4,12 +4,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 public class PauseReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        Intent pauseIntent = new Intent("com.nongratis.timetracker.ACTION_PAUSE_TIMER");
-        LocalBroadcastManager.getInstance(context).sendBroadcast(pauseIntent);
+        Intent pauseIntent = new Intent();
+        pauseIntent.setClassName("com.nongratis.timetracker", "com.nongratis.timetracker.receivers.PauseReceiver");
+        pauseIntent.setAction("com.nongratis.timetracker.ACTION_PAUSE_TIMER");
     }
 }
