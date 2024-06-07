@@ -30,21 +30,21 @@
         <receiver android:name=".receivers.PauseReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="PAUSE_TIMER"/>
+                <action android:name="com.nongratis.timetracker.ACTION_PAUSE_TIMER"/>
             </intent-filter>
         </receiver>
 
         <receiver android:name=".receivers.StopReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="STOP_TIMER"/>
+                <action android:name="com.nongratis.timetracker.ACTION_STOP_TIMER"/>
             </intent-filter>
         </receiver>
 
         <receiver android:name=".receivers.ResumeReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="RESUME_TIMER"/>
+                <action android:name="com.nongratis.timetracker.ACTION_RESUME_TIMER"/>
             </intent-filter>
         </receiver>
     </application>
