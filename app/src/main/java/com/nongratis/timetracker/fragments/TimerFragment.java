@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.nongratis.timetracker.R;
 import com.nongratis.timetracker.data.repository.TaskRepository;
+import com.nongratis.timetracker.managers.NotificationManager;
 import com.nongratis.timetracker.managers.UIManager;
 import com.nongratis.timetracker.utils.DateTimePickerUtil;
 import com.nongratis.timetracker.viewmodel.TaskViewModel;
@@ -24,6 +25,7 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
     private TimerViewModel timerViewModel;
     private TaskViewModel taskViewModel;
     private UIManager uiManager;
+    private NotificationManager notificationManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,6 +38,7 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timer, container, false);
         uiManager = new UIManager(view, this);
+        notificationManager = new NotificationManager(requireActivity());
 
         view.findViewById(R.id.add_button).setOnClickListener(v -> turnDateTimePicker());
 
@@ -57,7 +60,7 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
     private void observeViewModels() {
         timerViewModel.getElapsedTime().observe(getViewLifecycleOwner(), elapsedTime -> {
             uiManager.updateTimerDisplay(timerViewModel.isRunning(), elapsedTime);
-            timerViewModel.updateNotification(elapsedTime, timerViewModel.isPaused());
+            notificationManager.updateNotification(elapsedTime, timerViewModel.isPaused());
         });
     }
 

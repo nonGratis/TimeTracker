@@ -2,6 +2,7 @@ package com.nongratis.timetracker.viewmodel;
 
 import android.app.Application;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -9,23 +10,19 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.nongratis.timetracker.data.repository.TaskRepository;
-import com.nongratis.timetracker.managers.TaskManager;
+import com.nongratis.timetracker.managers.NotificationManager;
 import com.nongratis.timetracker.managers.TimerManager;
-import com.nongratis.timetracker.utils.NotificationHelper;
 
 public class TimerViewModel extends AndroidViewModel {
 
     private final TimerManager timerManager;
-    private final TaskManager taskManager;
     private final MutableLiveData<String> elapsedTime = new MutableLiveData<>();
-    private final NotificationHelper notificationHelper;
+    private final NotificationManager notificationManager;
 
     public TimerViewModel(@NonNull Application application) {
         super(application);
         timerManager = new TimerManager();
-        taskManager = new TaskManager(new TaskViewModel(application, new TaskRepository(application)));
-        notificationHelper = new NotificationHelper(application);
+        notificationManager = new NotificationManager(application);
     }
 
     public LiveData<String> getElapsedTime() {
@@ -71,12 +68,14 @@ public class TimerViewModel extends AndroidViewModel {
     }
 
     private void startUpdatingElapsedTime() {
-        final Handler handler = new Handler();
+        final Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (timerManager.isRunning()) {
-                    updateElapsedTime();
+                    String time = timerManager.getElapsedTime();
+                    elapsedTime.postValue(time);
+                    notificationManager.updateNotification(time, timerManager.isPaused());
                     handler.postDelayed(this, 1000);
                 }
             }
@@ -84,11 +83,6 @@ public class TimerViewModel extends AndroidViewModel {
     }
 
     public void saveTimer(String workflowName, String projectName, String description) {
-        taskManager.saveTask(workflowName, projectName, description, timerManager.getStartTime(), System.currentTimeMillis());
         Log.d("TimerViewModel", "Timer saved");
-    }
-
-    public void updateNotification(String elapsedTime, boolean isPaused) {
-        notificationHelper.updateNotification(elapsedTime, isPaused);
     }
 }
