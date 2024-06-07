@@ -15,7 +15,6 @@ import com.nongratis.timetracker.R;
 import com.nongratis.timetracker.data.repository.TaskRepository;
 import com.nongratis.timetracker.managers.UIManager;
 import com.nongratis.timetracker.utils.DateTimePickerUtil;
-import com.nongratis.timetracker.utils.NotificationHelper;
 import com.nongratis.timetracker.viewmodel.TaskViewModel;
 import com.nongratis.timetracker.viewmodel.TaskViewModelFactory;
 import com.nongratis.timetracker.viewmodel.TimerViewModel;
@@ -25,7 +24,6 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
     private TimerViewModel timerViewModel;
     private TaskViewModel taskViewModel;
     private UIManager uiManager;
-    private NotificationHelper notificationHelper;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,13 +52,12 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
         TaskViewModelFactory factory = new TaskViewModelFactory(requireActivity().getApplication(), taskRepository);
         taskViewModel = new ViewModelProvider(this, factory).get(TaskViewModel.class);
         timerViewModel = new ViewModelProvider(this).get(TimerViewModel.class);
-        notificationHelper = new NotificationHelper(requireContext());
     }
 
     private void observeViewModels() {
         timerViewModel.getElapsedTime().observe(getViewLifecycleOwner(), elapsedTime -> {
             uiManager.updateTimerDisplay(timerViewModel.isRunning(), elapsedTime);
-            notificationHelper.updateNotification(elapsedTime, timerViewModel.isPaused());
+            timerViewModel.updateNotification(elapsedTime, timerViewModel.isPaused());
         });
     }
 

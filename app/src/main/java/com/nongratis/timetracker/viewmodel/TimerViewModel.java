@@ -12,17 +12,20 @@ import androidx.lifecycle.MutableLiveData;
 import com.nongratis.timetracker.data.repository.TaskRepository;
 import com.nongratis.timetracker.managers.TaskManager;
 import com.nongratis.timetracker.managers.TimerManager;
+import com.nongratis.timetracker.utils.NotificationHelper;
 
 public class TimerViewModel extends AndroidViewModel {
 
     private final TimerManager timerManager;
     private final TaskManager taskManager;
     private final MutableLiveData<String> elapsedTime = new MutableLiveData<>();
+    private final NotificationHelper notificationHelper;
 
     public TimerViewModel(@NonNull Application application) {
         super(application);
         timerManager = new TimerManager();
         taskManager = new TaskManager(new TaskViewModel(application, new TaskRepository(application)));
+        notificationHelper = new NotificationHelper(application);
     }
 
     public LiveData<String> getElapsedTime() {
@@ -83,5 +86,9 @@ public class TimerViewModel extends AndroidViewModel {
     public void saveTimer(String workflowName, String projectName, String description) {
         taskManager.saveTask(workflowName, projectName, description, timerManager.getStartTime(), System.currentTimeMillis());
         Log.d("TimerViewModel", "Timer saved");
+    }
+
+    public void updateNotification(String elapsedTime, boolean isPaused) {
+        notificationHelper.updateNotification(elapsedTime, isPaused);
     }
 }
