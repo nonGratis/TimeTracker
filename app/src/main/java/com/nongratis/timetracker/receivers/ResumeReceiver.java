@@ -4,14 +4,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.nongratis.timetracker.Constants;
-import com.nongratis.timetracker.fragments.TimerFragment;
 
 public class ResumeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        Intent stopTimer = new Intent(context, TimerFragment.class);
-        stopTimer.setAction(Constants.ACTION_RESUME_TIMER);
-        context.sendBroadcast(stopTimer);
+        Intent resumeTimer = new Intent(Constants.ACTION_RESUME_TIMER);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(resumeTimer);
     }
 }

@@ -82,6 +82,7 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
             timerViewModel.stopTimer();
         }
     }
+
     @Override
     public void onPauseButtonClick() {
         String[] taskDetails = getTaskDetails();
@@ -93,6 +94,7 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
             timerViewModel.resumeTimer();
         }
     }
+
     private String[] getTaskDetails() {
         String workflowName = ((TextView) requireView().findViewById(R.id.workflowName)).getText().toString();
         String projectName = ((TextView) requireView().findViewById(R.id.projectName)).getText().toString();
