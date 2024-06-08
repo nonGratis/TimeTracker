@@ -66,9 +66,8 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
 
     @Override
     public void onStartStopButtonClick() {
-        String[] taskDetails = getTaskDetails();
-
         if (timerViewModel.isRunning()) {
+            String[] taskDetails = getTaskDetails();
             timerViewModel.saveTimer(taskDetails[0], taskDetails[1], taskDetails[2]);
             timerViewModel.stopTimer();
         } else {

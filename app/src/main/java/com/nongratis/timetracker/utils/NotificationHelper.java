@@ -11,6 +11,7 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 
 import com.nongratis.timetracker.R;
+import com.nongratis.timetracker.receivers.StopReceiver;
 
 public class NotificationHelper {
     private static final String TAG = "NotificationHelper";
@@ -38,12 +39,15 @@ public class NotificationHelper {
         Log.i(TAG, "Starting notification with timerDuration: " + timerDuration + ", isPaused: " + isPaused);
 
         Intent pauseIntent = new Intent("com.nongratis.timetracker.ACTION_PAUSE_TIMER");
+        pauseIntent.setAction("com.nongratis.timetracker.ACTION_PAUSE_TIMER");
         PendingIntent pausePendingIntent = PendingIntent.getBroadcast(context, 0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         Intent resumeIntent = new Intent("com.nongratis.timetracker.ACTION_RESUME_TIMER");
+        resumeIntent.setAction("com.nongratis.timetracker.ACTION_RESUME_TIMER");
         PendingIntent resumePendingIntent = PendingIntent.getBroadcast(context, 0, resumeIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        Intent stopIntent = new Intent("com.nongratis.timetracker.ACTION_STOP_TIMER");
+        Intent stopIntent = new Intent(context, StopReceiver.class);
+        stopIntent.setAction("com.nongratis.timetracker.ACTION_STOP_TIMER");
         PendingIntent stopPendingIntent = PendingIntent.getBroadcast(context, 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
