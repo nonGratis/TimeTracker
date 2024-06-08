@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.nongratis.timetracker.utils.NotificationHelper;
 
 public class StopReceiver extends BroadcastReceiver {
@@ -16,9 +18,9 @@ public class StopReceiver extends BroadcastReceiver {
         try {
             Log.i(TAG, "Received stop intent");
 
-            Intent stopIntent = new Intent();
-            stopIntent.setClassName("com.nongratis.timetracker", "com.nongratis.timetracker.receivers.StopReceiver");
-            stopIntent.setAction("com.nongratis.timetracker.ACTION_STOP_TIMER");
+            // Send a local broadcast to stop the timer
+            Intent stopIntent = new Intent("com.nongratis.timetracker.ACTION_STOP_TIMER");
+            LocalBroadcastManager.getInstance(context).sendBroadcast(stopIntent);
 
             Log.i(TAG, "Stop action set");
 
