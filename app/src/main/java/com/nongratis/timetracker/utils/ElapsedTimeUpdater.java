@@ -1,12 +1,13 @@
-package com.nongratis.timetracker.viewmodel;
+package com.nongratis.timetracker.utils;
 
 import android.os.Handler;
 import android.os.Looper;
-
 import androidx.lifecycle.MutableLiveData;
-
 import com.nongratis.timetracker.managers.TimerManager;
 
+/**
+ * Utility class for updating elapsed time.
+ */
 public class ElapsedTimeUpdater {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final TimerManager timerManager;
