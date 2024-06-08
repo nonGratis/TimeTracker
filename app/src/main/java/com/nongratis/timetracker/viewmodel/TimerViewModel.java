@@ -10,19 +10,16 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.nongratis.timetracker.managers.NotificationManager;
 import com.nongratis.timetracker.managers.TimerManager;
 
 public class TimerViewModel extends AndroidViewModel {
 
     private final TimerManager timerManager;
     private final MutableLiveData<String> elapsedTime = new MutableLiveData<>();
-    private final NotificationManager notificationManager;
 
     public TimerViewModel(@NonNull Application application) {
         super(application);
         timerManager = new TimerManager();
-        notificationManager = new NotificationManager(application);
     }
 
     public LiveData<String> getElapsedTime() {
@@ -75,7 +72,6 @@ public class TimerViewModel extends AndroidViewModel {
                 if (timerManager.isRunning()) {
                     String time = timerManager.getElapsedTime();
                     elapsedTime.postValue(time);
-                    notificationManager.updateNotification(time, timerManager.isPaused());
                     handler.postDelayed(this, 1000);
                 }
             }
