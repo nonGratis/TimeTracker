@@ -55,10 +55,7 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
     }
 
     private void observeViewModels() {
-        timerViewModel.getElapsedTime().observe(getViewLifecycleOwner(), elapsedTime -> {
-            uiManager.updateTimerDisplay(timerViewModel.isRunning(), elapsedTime);
-            timerViewModel.updateNotification(elapsedTime, timerViewModel.isPaused());
-        });
+        timerViewModel.getElapsedTime().observe(getViewLifecycleOwner(), elapsedTime -> uiManager.updateTimerDisplay(timerViewModel.isRunning(), elapsedTime));
     }
 
     @Override

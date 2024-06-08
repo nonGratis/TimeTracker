@@ -68,6 +68,7 @@ public class TimerViewModel extends AndroidViewModel {
         String time = timerManager.getElapsedTime();
         elapsedTime.postValue(time);
         Log.d("TimerViewModel", "Elapsed time updated: " + time);
+        updateNotification();
     }
 
     private void startUpdatingElapsedTime() {
@@ -88,7 +89,9 @@ public class TimerViewModel extends AndroidViewModel {
         Log.d("TimerViewModel", "Timer saved");
     }
 
-    public void updateNotification(String elapsedTime, boolean isPaused) {
+    public void updateNotification() {
+        String elapsedTime = getElapsedTime().getValue();
+        boolean isPaused = isPaused();
         notificationHelper.updateNotification(elapsedTime, isPaused);
     }
 }
