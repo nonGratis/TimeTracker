@@ -15,11 +15,14 @@ import com.nongratis.timetracker.managers.TimerManager;
 public class TimerViewModel extends AndroidViewModel {
 
     private final TimerManager timerManager;
+    private final ElapsedTimeUpdater elapsedTimeUpdater;
+
     private final MutableLiveData<String> elapsedTime = new MutableLiveData<>();
 
     public TimerViewModel(@NonNull Application application) {
         super(application);
         timerManager = new TimerManager();
+        elapsedTimeUpdater = new ElapsedTimeUpdater(timerManager, elapsedTime);
     }
 
     public LiveData<String> getElapsedTime() {
@@ -37,7 +40,7 @@ public class TimerViewModel extends AndroidViewModel {
     public void startTimer() {
         timerManager.startTimer();
         Log.d("TimerViewModel", "Timer started");
-        startUpdatingElapsedTime();
+        elapsedTimeUpdater.startUpdatingElapsedTime();
     }
 
     public void stopTimer() {
@@ -55,27 +58,13 @@ public class TimerViewModel extends AndroidViewModel {
     public void resumeTimer() {
         timerManager.startTimer();
         Log.d("TimerViewModel", "Timer resumed");
-        startUpdatingElapsedTime();
+        elapsedTimeUpdater.startUpdatingElapsedTime();
     }
 
     public void updateElapsedTime() {
         String time = timerManager.getElapsedTime();
         elapsedTime.postValue(time);
         Log.d("TimerViewModel", "Elapsed time updated: " + time);
-    }
-
-    private void startUpdatingElapsedTime() {
-        final Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (timerManager.isRunning()) {
-                    String time = timerManager.getElapsedTime();
-                    elapsedTime.postValue(time);
-                    handler.postDelayed(this, 1000);
-                }
-            }
-        }, 1000);
     }
 
     public void saveTimer(String workflowName, String projectName, String description) {
