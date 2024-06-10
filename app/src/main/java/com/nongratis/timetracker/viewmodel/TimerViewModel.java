@@ -13,6 +13,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.nongratis.timetracker.managers.NotificationManager;
 import com.nongratis.timetracker.managers.TimerManager;
 import com.nongratis.timetracker.utils.ElapsedTimeUpdater;
 
@@ -22,11 +23,13 @@ public class TimerViewModel extends AndroidViewModel {
     private final ElapsedTimeUpdater elapsedTimeUpdater;
 
     private final MutableLiveData<String> elapsedTime = new MutableLiveData<>();
-    private BroadcastReceiver receiver;
+    private final NotificationManager notificationManager;
+    private final BroadcastReceiver receiver;
 
     public TimerViewModel(@NonNull Application application) {
         super(application);
         timerManager = new TimerManager();
+        notificationManager = new NotificationManager(application);
         elapsedTimeUpdater = new ElapsedTimeUpdater(timerManager, elapsedTime);
 
         receiver = new BroadcastReceiver() {
@@ -36,8 +39,7 @@ public class TimerViewModel extends AndroidViewModel {
                     stopTimer();
                 } else if ("com.nongratis.timetracker.ACTION_PAUSE_TIMER".equals(intent.getAction())) {
                     pauseTimer();
-                }
-                else if ("com.nongratis.timetracker.ACTION_RESUME_TIMER".equals(intent.getAction())) {
+                } else if ("com.nongratis.timetracker.ACTION_RESUME_TIMER".equals(intent.getAction())) {
                     resumeTimer();
                 }
             }
@@ -78,13 +80,14 @@ public class TimerViewModel extends AndroidViewModel {
     public void stopTimer() {
         timerManager.stopTimer();
         Log.d("TimerViewModel", "Timer stopped");
+        notificationManager.cancelNotification();
         updateElapsedTime();
     }
 
     public void pauseTimer() {
         timerManager.pauseTimer();
-        Log.d("TimerViewModel", "Timer paused");
         updateElapsedTime();
+        Log.d("TimerViewModel", "Timer paused");
     }
 
     public void resumeTimer() {

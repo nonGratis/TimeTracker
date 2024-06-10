@@ -71,4 +71,8 @@ public class NotificationHelper {
         Log.i(TAG, "Starting notification with timerDuration: " + timerDuration + ", isPaused: " + isPaused);
         startNotification(timerDuration, isPaused);
     }
+
+    public void cancelNotification() {
+        notificationManager.cancel(NOTIFICATION_ID);
+    }
 }

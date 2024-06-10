@@ -14,4 +14,8 @@ public class NotificationManager {
     public void updateNotification(String elapsedTime, boolean isPaused) {
         notificationHelper.updateNotification(elapsedTime, isPaused);
     }
+
+    public void cancelNotification() {
+        notificationHelper.cancelNotification();
+    }
 }
