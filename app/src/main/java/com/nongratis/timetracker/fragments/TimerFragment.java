@@ -74,6 +74,8 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
             String[] taskDetails = getTaskDetails();
             timerViewModel.saveTimer(taskDetails[0], taskDetails[1], taskDetails[2]);
             timerViewModel.stopTimer();
+        } else if (timerViewModel.isPaused()) {
+            timerViewModel.resumeTimer();
         } else {
             timerViewModel.startTimer();
         }
@@ -92,7 +94,8 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
 
         if (timerViewModel.isRunning()) {
             timerViewModel.saveTimer(taskDetails[0], taskDetails[1], taskDetails[2]);
-            timerViewModel.stopTimer();
+            timerViewModel.pauseTimer();
+            observeViewModels();
         } else {
             timerViewModel.resumeTimer();
         }

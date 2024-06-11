@@ -12,10 +12,10 @@ public class TimerLogic {
     public void startTimer() {
         isRunning = true;
         if (isPaused) {
-            startTime = System.currentTimeMillis();
-        } else {
             startTime = System.currentTimeMillis() - pauseTime;
             isPaused = false;
+        } else {
+            startTime = System.currentTimeMillis();
         }
         Log.i(TAG, String.format("startTimer: startTime=%d, pauseTime=%d, isRunning=%b, isPaused=%b", startTime, pauseTime, isRunning, isPaused));
     }
