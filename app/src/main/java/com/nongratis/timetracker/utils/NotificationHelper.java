@@ -6,12 +6,17 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
 import com.nongratis.timetracker.R;
+import com.nongratis.timetracker.receivers.PauseReceiver;
+import com.nongratis.timetracker.receivers.ResumeReceiver;
+import com.nongratis.timetracker.receivers.StopReceiver;
 
 public class NotificationHelper {
+    private static final String TAG = "NotificationHelper";
     private static final String CHANNEL_ID = "TIMER_CHANNEL";
     private static final String CHANNEL_NAME = "Timer Channel";
     private static final String CHANNEL_DESC = "Channel for timer notifications";
@@ -33,13 +38,18 @@ public class NotificationHelper {
     }
 
     public void startNotification(String timerDuration, boolean isPaused) {
-        Intent pauseIntent = new Intent("com.nongratis.timetracker.ACTION_PAUSE_TIMER");
+        Log.i(TAG, "Starting notification with timerDuration: " + timerDuration + ", isPaused: " + isPaused);
+
+        Intent pauseIntent = new Intent(context, PauseReceiver.class);
+        pauseIntent.setAction("com.nongratis.timetracker.ACTION_PAUSE_TIMER");
         PendingIntent pausePendingIntent = PendingIntent.getBroadcast(context, 0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        Intent resumeIntent = new Intent("com.nongratis.timetracker.ACTION_RESUME_TIMER");
+        Intent resumeIntent = new Intent(context, ResumeReceiver.class);
+        resumeIntent.setAction("com.nongratis.timetracker.ACTION_RESUME_TIMER");
         PendingIntent resumePendingIntent = PendingIntent.getBroadcast(context, 0, resumeIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        Intent stopIntent = new Intent("com.nongratis.timetracker.ACTION_STOP_TIMER");
+        Intent stopIntent = new Intent(context, StopReceiver.class);
+        stopIntent.setAction("com.nongratis.timetracker.ACTION_STOP_TIMER");
         PendingIntent stopPendingIntent = PendingIntent.getBroadcast(context, 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
@@ -60,6 +70,11 @@ public class NotificationHelper {
     }
 
     public void updateNotification(String timerDuration, boolean isPaused) {
+        Log.i(TAG, "Starting notification with timerDuration: " + timerDuration + ", isPaused: " + isPaused);
         startNotification(timerDuration, isPaused);
+    }
+
+    public void cancelNotification() {
+        notificationManager.cancel(NOTIFICATION_ID);
     }
 }

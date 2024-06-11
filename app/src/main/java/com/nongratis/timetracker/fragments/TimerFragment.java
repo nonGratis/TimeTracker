@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.nongratis.timetracker.R;
 import com.nongratis.timetracker.data.repository.TaskRepository;
+import com.nongratis.timetracker.managers.NotificationManager;
 import com.nongratis.timetracker.managers.UIManager;
 import com.nongratis.timetracker.utils.DateTimePickerUtil;
 import com.nongratis.timetracker.viewmodel.TaskViewModel;
@@ -24,6 +25,7 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
     private TimerViewModel timerViewModel;
     private TaskViewModel taskViewModel;
     private UIManager uiManager;
+    private NotificationManager notificationManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,6 +38,7 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timer, container, false);
         uiManager = new UIManager(view, this);
+        notificationManager = new NotificationManager(requireActivity());
 
         view.findViewById(R.id.add_button).setOnClickListener(v -> turnDateTimePicker());
 
@@ -55,16 +58,24 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
     }
 
     private void observeViewModels() {
-        timerViewModel.getElapsedTime().observe(getViewLifecycleOwner(), elapsedTime -> uiManager.updateTimerDisplay(timerViewModel.isRunning(), elapsedTime));
+        timerViewModel.getElapsedTime().observe(getViewLifecycleOwner(), elapsedTime -> {
+            uiManager.updateTimerDisplay(timerViewModel.isRunning(), elapsedTime);
+            if (timerViewModel.isRunning() || timerViewModel.isPaused()) {
+                notificationManager.updateNotification(elapsedTime, timerViewModel.isPaused());
+            } else {
+                notificationManager.cancelNotification();
+            }
+        });
     }
 
     @Override
     public void onStartStopButtonClick() {
-        String[] taskDetails = getTaskDetails();
-
         if (timerViewModel.isRunning()) {
+            String[] taskDetails = getTaskDetails();
             timerViewModel.saveTimer(taskDetails[0], taskDetails[1], taskDetails[2]);
             timerViewModel.stopTimer();
+        } else if (timerViewModel.isPaused()) {
+            timerViewModel.resumeTimer();
         } else {
             timerViewModel.startTimer();
         }
@@ -83,7 +94,8 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
 
         if (timerViewModel.isRunning()) {
             timerViewModel.saveTimer(taskDetails[0], taskDetails[1], taskDetails[2]);
-            timerViewModel.stopTimer();
+            timerViewModel.pauseTimer();
+            observeViewModels();
         } else {
             timerViewModel.resumeTimer();
         }
