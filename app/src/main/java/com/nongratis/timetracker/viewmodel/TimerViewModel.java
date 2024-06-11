@@ -1,31 +1,62 @@
 package com.nongratis.timetracker.viewmodel;
 
 import android.app.Application;
-import android.os.Handler;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.nongratis.timetracker.data.repository.TaskRepository;
-import com.nongratis.timetracker.managers.TaskManager;
+import com.nongratis.timetracker.managers.NotificationManager;
 import com.nongratis.timetracker.managers.TimerManager;
-import com.nongratis.timetracker.utils.NotificationHelper;
+import com.nongratis.timetracker.utils.ElapsedTimeUpdater;
 
 public class TimerViewModel extends AndroidViewModel {
 
     private final TimerManager timerManager;
-    private final TaskManager taskManager;
+    private final ElapsedTimeUpdater elapsedTimeUpdater;
+
     private final MutableLiveData<String> elapsedTime = new MutableLiveData<>();
-    private final NotificationHelper notificationHelper;
+    private final NotificationManager notificationManager;
+    private final BroadcastReceiver receiver;
 
     public TimerViewModel(@NonNull Application application) {
         super(application);
         timerManager = new TimerManager();
-        taskManager = new TaskManager(new TaskViewModel(application, new TaskRepository(application)));
-        notificationHelper = new NotificationHelper(application);
+        notificationManager = new NotificationManager(application);
+        elapsedTimeUpdater = new ElapsedTimeUpdater(timerManager, elapsedTime);
+
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if ("com.nongratis.timetracker.ACTION_STOP_TIMER".equals(intent.getAction())) {
+                    stopTimer();
+                } else if ("com.nongratis.timetracker.ACTION_PAUSE_TIMER".equals(intent.getAction())) {
+                    pauseTimer();
+                } else if ("com.nongratis.timetracker.ACTION_RESUME_TIMER".equals(intent.getAction())) {
+                    resumeTimer();
+                }
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("com.nongratis.timetracker.ACTION_STOP_TIMER");
+        filter.addAction("com.nongratis.timetracker.ACTION_PAUSE_TIMER");
+        filter.addAction("com.nongratis.timetracker.ACTION_RESUME_TIMER");
+
+        LocalBroadcastManager.getInstance(application).registerReceiver(receiver, filter);
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        LocalBroadcastManager.getInstance(getApplication()).unregisterReceiver(receiver);
     }
 
     public LiveData<String> getElapsedTime() {
@@ -43,55 +74,35 @@ public class TimerViewModel extends AndroidViewModel {
     public void startTimer() {
         timerManager.startTimer();
         Log.d("TimerViewModel", "Timer started");
-        startUpdatingElapsedTime();
+        elapsedTimeUpdater.startUpdatingElapsedTime();
     }
 
     public void stopTimer() {
         timerManager.stopTimer();
         Log.d("TimerViewModel", "Timer stopped");
+        notificationManager.cancelNotification();
         updateElapsedTime();
     }
 
     public void pauseTimer() {
         timerManager.pauseTimer();
-        Log.d("TimerViewModel", "Timer paused");
         updateElapsedTime();
+        Log.d("TimerViewModel", "Timer paused");
     }
 
     public void resumeTimer() {
         timerManager.startTimer();
         Log.d("TimerViewModel", "Timer resumed");
-        startUpdatingElapsedTime();
+        elapsedTimeUpdater.startUpdatingElapsedTime();
     }
 
     public void updateElapsedTime() {
         String time = timerManager.getElapsedTime();
         elapsedTime.postValue(time);
         Log.d("TimerViewModel", "Elapsed time updated: " + time);
-        updateNotification();
-    }
-
-    private void startUpdatingElapsedTime() {
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (timerManager.isRunning()) {
-                    updateElapsedTime();
-                    handler.postDelayed(this, 1000);
-                }
-            }
-        }, 1000);
     }
 
     public void saveTimer(String workflowName, String projectName, String description) {
-        taskManager.saveTask(workflowName, projectName, description, timerManager.getStartTime(), System.currentTimeMillis());
         Log.d("TimerViewModel", "Timer saved");
-    }
-
-    public void updateNotification() {
-        String elapsedTime = getElapsedTime().getValue();
-        boolean isPaused = isPaused();
-        notificationHelper.updateNotification(elapsedTime, isPaused);
     }
 }

@@ -28,7 +28,7 @@
 
         <receiver
             android:name=".receivers.PauseReceiver"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.nongratis.timetracker.ACTION_PAUSE_TIMER" />
             </intent-filter>
@@ -36,7 +36,7 @@
 
         <receiver
             android:name=".receivers.StopReceiver"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.nongratis.timetracker.ACTION_STOP_TIMER" />
             </intent-filter>
@@ -44,7 +44,7 @@
 
         <receiver
             android:name=".receivers.ResumeReceiver"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.nongratis.timetracker.ACTION_RESUME_TIMER" />
             </intent-filter>
