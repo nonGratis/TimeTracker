@@ -13,22 +13,26 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.nongratis.timetracker.data.repository.TaskRepository;
 import com.nongratis.timetracker.managers.NotificationManager;
+import com.nongratis.timetracker.managers.TaskManager;
 import com.nongratis.timetracker.managers.TimerManager;
 import com.nongratis.timetracker.utils.ElapsedTimeUpdater;
 
 public class TimerViewModel extends AndroidViewModel {
 
+    private final NotificationManager notificationManager;
     private final TimerManager timerManager;
+    private final TaskManager taskManager;
     private final ElapsedTimeUpdater elapsedTimeUpdater;
 
     private final MutableLiveData<String> elapsedTime = new MutableLiveData<>();
-    private final NotificationManager notificationManager;
     private final BroadcastReceiver receiver;
 
     public TimerViewModel(@NonNull Application application) {
         super(application);
         timerManager = new TimerManager();
+        taskManager = new TaskManager(new TaskViewModel(application, new TaskRepository(application)));
         notificationManager = new NotificationManager(application);
         elapsedTimeUpdater = new ElapsedTimeUpdater(timerManager, elapsedTime);
 
@@ -103,6 +107,7 @@ public class TimerViewModel extends AndroidViewModel {
     }
 
     public void saveTimer(String workflowName, String projectName, String description) {
+        taskManager.saveTask(workflowName, projectName, description, timerManager.getStartTime(), System.currentTimeMillis());
         Log.d("TimerViewModel", "Timer saved");
     }
 }
