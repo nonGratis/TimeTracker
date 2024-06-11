@@ -15,4 +15,5 @@
     <string name="scroll_view_description">Scrollable area containing workflow and project data charts</string>
     <string name="FIRST_PAGE_NAME">Timer</string>
     <string name="SECOND_PAGE_NAME">Time Analysis</string>
+    <string name="total_time_0">Total Time: 0</string>
 </resources>
