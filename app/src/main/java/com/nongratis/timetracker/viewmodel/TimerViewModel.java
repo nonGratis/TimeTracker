@@ -100,7 +100,6 @@ public class TimerViewModel extends AndroidViewModel {
         String time = timerManager.getElapsedTime();
         elapsedTime.postValue(time);
         Log.d("TimerViewModel", "Elapsed time updated: " + time);
-        updateNotification();
     }
 
     public void saveTimer(String workflowName, String projectName, String description) {
