@@ -7,7 +7,7 @@ import android.content.Context;
 import androidx.lifecycle.LiveData;
 import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 
 import com.nongratis.timetracker.data.dao.TaskDao;
 import com.nongratis.timetracker.data.database.AppDatabase;

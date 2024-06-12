@@ -14,7 +14,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.ext.junit.runners.AndroidJUnit4"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -67,6 +67,8 @@ dependencies {
     implementation(libs.androidx.work.runtime)
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation(libs.androidx.junit)
+    implementation(libs.androidx.rules)
+    implementation(libs.androidx.runner)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
