@@ -82,9 +82,7 @@ public class TimerFragment extends Fragment implements UIManager.ButtonClickList
 
     @Override
     public void onDeleteButtonClick() {
-        if (timerViewModel.isRunning()) {
             timerViewModel.stopTimer();
-        }
     }
 
     @Override

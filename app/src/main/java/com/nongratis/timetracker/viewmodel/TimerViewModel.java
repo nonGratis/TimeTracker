@@ -82,10 +82,12 @@ public class TimerViewModel extends AndroidViewModel {
     }
 
     public void stopTimer() {
-        timerManager.stopTimer();
-        Log.d("TimerViewModel", "Timer stopped");
-        notificationManager.cancelNotification();
-        updateElapsedTime();
+        if (isRunning()) {
+            timerManager.stopTimer();
+            Log.d("TimerViewModel", "Timer stopped");
+            notificationManager.cancelNotification();
+            updateElapsedTime();
+        }
     }
 
     public void pauseTimer() {
