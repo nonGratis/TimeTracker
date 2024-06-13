@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class TaskRepository {
+public class TaskRepository implements ITaskRepository {
     private final TaskDao taskDao;
     private final ExecutorService executorService;
 
@@ -23,15 +23,15 @@ public class TaskRepository {
         executorService = Executors.newSingleThreadExecutor();
     }
 
-    public void insert(Task task) {
+    public void insertTask(Task task) {
         executorService.execute(() -> taskDao.insert(task));
     }
 
-    public void update(Task task) {
+    public void updateTask(Task task) {
         executorService.execute(() -> taskDao.update(task));
     }
 
-    public void delete(Task task) {
+    public void deleteTask(Task task) {
         executorService.execute(() -> taskDao.delete(task));
     }
 
