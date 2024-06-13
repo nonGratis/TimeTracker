@@ -2,6 +2,8 @@ package com.nongratis.timetracker.utils;
 
 import android.util.Log;
 
+import java.util.Locale;
+
 public class TimerLogic {
     private static final String TAG = TimerLogic.class.getSimpleName();
     private long startTime = 0L;
@@ -41,7 +43,7 @@ public class TimerLogic {
         int minutes = seconds / 60;
         int hours = minutes / 60;
         seconds = seconds % 60;
-        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        return String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
     }
 
     protected long getElapsedTimeMillis() {
@@ -61,6 +63,6 @@ public class TimerLogic {
     }
 
     public boolean isPaused() {
-        return !isRunning && pauseTime > 0L;
+        return isPaused;
     }
 }
