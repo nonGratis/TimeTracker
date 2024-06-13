@@ -106,8 +106,8 @@ public class TimerViewModel extends AndroidViewModel {
         Log.d("TimerViewModel", "Elapsed time updated: " + time);
     }
 
-    public void saveTimer(String workflowName, String projectName, String description) {
-        taskManager.saveTask(workflowName, projectName, description, timerManager.getStartTime(), System.currentTimeMillis());
+    public void saveTimer(String[] taskDetails) {
+        taskManager.saveTask(taskDetails[0], taskDetails[1], taskDetails[2], timerManager.getStartTime(), System.currentTimeMillis());
         Log.d("TimerViewModel", "Timer saved");
     }
 }
