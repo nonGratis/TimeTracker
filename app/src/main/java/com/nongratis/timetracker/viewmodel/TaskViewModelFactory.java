@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.nongratis.timetracker.data.repository.TaskRepository;
 
+import java.util.Objects;
+
 /**
  * Factory class to create TaskViewModel instances.
  */
@@ -24,7 +26,7 @@ public class TaskViewModelFactory implements ViewModelProvider.Factory {
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(TaskViewModel.class)) {
-            return (T) new TaskViewModel(application, taskRepository);
+            return Objects.requireNonNull(modelClass.cast(new TaskViewModel(application, taskRepository)));
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }

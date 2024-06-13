@@ -12,7 +12,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.nongratis.timetracker.data.dao.TaskDao;
 import com.nongratis.timetracker.data.entities.Task;
 
-@Database(entities = {Task.class}, version = 3)
+@Database(entities = {Task.class}, version = 3, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     static final Migration MIGRATION_1_2 = new Migration(1, 2) {

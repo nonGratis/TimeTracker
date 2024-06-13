@@ -7,7 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.nongratis.timetracker.data.entities.Task;
-import com.nongratis.timetracker.data.repository.TaskRepository;
+import com.nongratis.timetracker.data.repository.ITaskRepository;
 
 import java.util.List;
 
@@ -16,10 +16,10 @@ import java.util.List;
  */
 public class TaskViewModel extends AndroidViewModel {
 
-    private final TaskRepository taskRepository;
+    private final ITaskRepository taskRepository;
     private final LiveData<List<Task>> allTasks;
 
-    public TaskViewModel(@NonNull Application application, TaskRepository taskRepository) {
+    public TaskViewModel(@NonNull Application application, ITaskRepository taskRepository) {
         super(application);
         this.taskRepository = taskRepository;
         this.allTasks = taskRepository.getAllTasks();
@@ -30,15 +30,15 @@ public class TaskViewModel extends AndroidViewModel {
     }
 
     public void insert(Task task) {
-        taskRepository.insert(task);
+        taskRepository.insertTask(task);
     }
 
     public void update(Task task) {
-        taskRepository.update(task);
+        taskRepository.updateTask(task);
     }
 
     public void delete(Task task) {
-        taskRepository.delete(task);
+        taskRepository.deleteTask(task);
     }
 
     public LiveData<List<Task>> getTasksByPeriod(String period) {
