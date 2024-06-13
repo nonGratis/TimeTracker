@@ -61,6 +61,6 @@ public class TimerLogic {
     }
 
     public boolean isPaused() {
-        return !isRunning && pauseTime > 0L;
+        return isPaused;
     }
 }
