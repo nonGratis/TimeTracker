@@ -18,11 +18,6 @@ import java.util.List;
  */
 @Dao
 public interface TaskDao {
-    /**
-     * TaskDao is an interface that serves as the DAO (Data Access Object) for the Task entity.
-     * It provides methods to perform database operations on the tasks table.
-     * It is a part of the Room Persistence Library which provides an abstraction layer over SQLite.
-     */
     @Insert
     void insert(Task task);
 

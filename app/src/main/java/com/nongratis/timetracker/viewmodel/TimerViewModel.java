@@ -82,10 +82,12 @@ public class TimerViewModel extends AndroidViewModel {
     }
 
     public void stopTimer() {
-        timerManager.stopTimer();
-        Log.d("TimerViewModel", "Timer stopped");
-        notificationManager.cancelNotification();
-        updateElapsedTime();
+        if (isRunning()) {
+            timerManager.stopTimer();
+            Log.d("TimerViewModel", "Timer stopped");
+            notificationManager.cancelNotification();
+            updateElapsedTime();
+        }
     }
 
     public void pauseTimer() {
@@ -106,8 +108,32 @@ public class TimerViewModel extends AndroidViewModel {
         Log.d("TimerViewModel", "Elapsed time updated: " + time);
     }
 
-    public void saveTimer(String workflowName, String projectName, String description) {
-        taskManager.saveTask(workflowName, projectName, description, timerManager.getStartTime(), System.currentTimeMillis());
+    public void saveTimer(String[] taskDetails) {
+        taskManager.saveTask(taskDetails[0], taskDetails[1], taskDetails[2], timerManager.getStartTime(), System.currentTimeMillis());
         Log.d("TimerViewModel", "Timer saved");
+    }
+
+    public void onStartStopButtonClick(String[] taskDetails) {
+        if (isRunning()) {
+            saveTimer(taskDetails);
+            stopTimer();
+        } else if (isPaused()) {
+            resumeTimer();
+        } else {
+            startTimer();
+        }
+    }
+
+    public void onPauseButtonClick(String[] taskDetails) {
+        if (isRunning()) {
+            saveTimer(taskDetails);
+            pauseTimer();
+        } else {
+            resumeTimer();
+        }
+    }
+
+    public void onDeleteButtonClick() {
+        stopTimer();
     }
 }
