@@ -42,7 +42,7 @@ public class TimeUtilsTest {
         long expectedEndTime = System.currentTimeMillis();
 
         assertEquals("Start time should be at the beginning of the month", startTime, expectedStartTime);
-        assertEquals("End time should be current time", endTime, expectedEndTime);
+        assertTrue("End time should be current time", endTime >= expectedEndTime && endTime <= expectedEndTime + 1000);
     }
 
     @Test(expected = IllegalArgumentException.class)
