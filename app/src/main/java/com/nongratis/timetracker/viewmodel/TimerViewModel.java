@@ -112,4 +112,28 @@ public class TimerViewModel extends AndroidViewModel {
         taskManager.saveTask(taskDetails[0], taskDetails[1], taskDetails[2], timerManager.getStartTime(), System.currentTimeMillis());
         Log.d("TimerViewModel", "Timer saved");
     }
+
+    public void onStartStopButtonClick(String[] taskDetails) {
+        if (isRunning()) {
+            saveTimer(taskDetails);
+            stopTimer();
+        } else if (isPaused()) {
+            resumeTimer();
+        } else {
+            startTimer();
+        }
+    }
+
+    public void onPauseButtonClick(String[] taskDetails) {
+        if (isRunning()) {
+            saveTimer(taskDetails);
+            pauseTimer();
+        } else {
+            resumeTimer();
+        }
+    }
+
+    public void onDeleteButtonClick() {
+        stopTimer();
+    }
 }

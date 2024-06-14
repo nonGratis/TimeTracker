@@ -81,27 +81,15 @@ public class TimerFragment extends Fragment {
     }
 
     private void onStartStopButtonClick() {
-        if (timerViewModel.isRunning()) {
-            timerViewModel.saveTimer(getTaskDetails());
-            timerViewModel.stopTimer();
-        } else if (timerViewModel.isPaused()) {
-            timerViewModel.resumeTimer();
-        } else {
-            timerViewModel.startTimer();
-        }
+        timerViewModel.onStartStopButtonClick(getTaskDetails());
     }
 
     private void onDeleteButtonClick() {
-        timerViewModel.stopTimer();
+        timerViewModel.onDeleteButtonClick();
     }
 
     private void onPauseButtonClick() {
-        if (timerViewModel.isRunning()) {
-            timerViewModel.saveTimer(getTaskDetails());
-            timerViewModel.pauseTimer();
-        } else {
-            timerViewModel.resumeTimer();
-        }
+        timerViewModel.onPauseButtonClick(getTaskDetails());
     }
 
     private String[] getTaskDetails() {
