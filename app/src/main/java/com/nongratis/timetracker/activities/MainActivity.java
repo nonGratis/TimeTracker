@@ -12,16 +12,13 @@ import com.nongratis.timetracker.adapter.ViewPagerAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ViewPager2 viewPager2;
-    private TabLayout tabLayout;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        viewPager2 = findViewById(R.id.viewPager);
-        tabLayout = findViewById(R.id.tab_layout);
+        ViewPager2 viewPager2 = findViewById(R.id.viewPager);
+        TabLayout tabLayout = findViewById(R.id.tab_layout);
 
         viewPager2.setAdapter(new ViewPagerAdapter(this));
 
