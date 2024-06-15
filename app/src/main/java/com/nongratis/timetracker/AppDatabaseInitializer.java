@@ -33,10 +33,8 @@ public class AppDatabaseInitializer extends Application {
             throw new IllegalStateException("AppDatabaseInitializer instance must be initialized before calling initializeDatabase");
         }
         if (database == null) {
-            DatabaseExecutor.getExecutor().execute(() -> {
-                database = Room.databaseBuilder(instance.getApplicationContext(),
-                        AppDatabase.class, "timetracker-db").build();
-            });
+            DatabaseExecutor.getExecutor().execute(() -> database = Room.databaseBuilder(instance.getApplicationContext(),
+                    AppDatabase.class, "timetracker-db").build());
         }
     }
 
