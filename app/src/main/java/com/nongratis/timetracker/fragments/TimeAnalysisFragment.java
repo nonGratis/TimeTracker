@@ -16,6 +16,7 @@ import com.nongratis.timetracker.R;
 import com.nongratis.timetracker.data.repository.TaskRepository;
 import com.nongratis.timetracker.managers.ButtonManager;
 import com.nongratis.timetracker.managers.PieChartManager;
+import com.nongratis.timetracker.utils.TimeUtils;
 import com.nongratis.timetracker.viewmodel.TaskViewModel;
 import com.nongratis.timetracker.viewmodel.TaskViewModelFactory;
 import com.nongratis.timetracker.viewmodel.TimeAnalysisViewModel;
@@ -77,7 +78,6 @@ public class TimeAnalysisFragment extends Fragment {
         timeAnalysisViewModel.getTotalTimeLiveData().observe(getViewLifecycleOwner(), totalTime -> {
             TextView totalTimeTextView;
             totalTimeTextView = getView().findViewById(R.id.totalTime);
-            totalTimeTextView.setText(String.format("Total Time: %s", timeAnalysisViewModel.formatDuration(totalTime)));
-        });
+            totalTimeTextView.setText(String.format("Total Time: %s", TimeUtils.getFormatDuration(totalTime)));        });
     }
 }

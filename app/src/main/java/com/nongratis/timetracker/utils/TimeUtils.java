@@ -1,6 +1,8 @@
 package com.nongratis.timetracker.utils;
 
 import java.util.Calendar;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class TimeUtils {
     public static long[] getTimeRangeForPeriod(String period) {
@@ -36,5 +38,12 @@ public class TimeUtils {
         }
 
         return new long[]{startTime, endTime};
+    }
+
+    public static String getFormatDuration(long duration) {
+        long hours = TimeUnit.MILLISECONDS.toHours(duration);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(duration) % 60;
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(duration) % 60;
+        return String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
     }
 }

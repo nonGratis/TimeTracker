@@ -2,8 +2,6 @@ package com.nongratis.timetracker.utils;
 
 import android.util.Log;
 
-import java.util.Locale;
-
 public class TimerLogic {
     private static final String TAG = TimerLogic.class.getSimpleName();
     private long startTime = 0L;
@@ -39,11 +37,7 @@ public class TimerLogic {
 
     public String getElapsedTime() {
         long elapsedTime = getElapsedTimeMillis();
-        int seconds = (int) (elapsedTime / 1000);
-        int minutes = seconds / 60;
-        int hours = minutes / 60;
-        seconds = seconds % 60;
-        return String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
+        return TimeUtils.getFormatDuration(elapsedTime);
     }
 
     protected long getElapsedTimeMillis() {
