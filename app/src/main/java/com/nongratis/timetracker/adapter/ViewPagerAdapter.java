@@ -17,14 +17,10 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        switch (position) {
-            case 0:
-                return new TimerFragment();
-            case 1:
-                return new TimeAnalysisFragment();
-            default:
-                return new TimerFragment();
+        if (position == 1) {
+            return new TimeAnalysisFragment();
         }
+        return new TimerFragment();
     }
 
     @Override
