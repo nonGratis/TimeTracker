@@ -36,7 +36,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/workflowName"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="64sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -49,7 +49,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/projectName"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp" />
+                    android:layout_height="64sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -61,12 +61,10 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/description"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="64sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
-
         </LinearLayout>
-
 
         <LinearLayout
             android:id="@+id/buttons_layout"
@@ -118,6 +116,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:clickable="true"
+                android:contentDescription="@string/start"
                 android:focusable="true"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_add"
