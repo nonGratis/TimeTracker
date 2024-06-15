@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TimeUtils {
     public static long[] getTimeRangeForPeriod(String period) {
-        long startTime = 0, endTime = System.currentTimeMillis();
+        long startTime, endTime = System.currentTimeMillis();
         Calendar calendar = Calendar.getInstance();
 
         switch (period) {
